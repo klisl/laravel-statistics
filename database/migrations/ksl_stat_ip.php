@@ -18,7 +18,7 @@ class KslStatIp extends Migration
 
             $table->string('ip',15);
             $table->string('str_url');
-            $table->boolean('black_list_ip');
+            $table->boolean('black_list_ip')->default(0);
             $table->string('comment')->nullable();
 
             $table->timestamps();

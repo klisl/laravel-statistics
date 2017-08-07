@@ -35,7 +35,7 @@ class StatisticsServiceProvider extends ServiceProvider
 		$this->publishes([__DIR__ . '/../public/' => public_path()]);
 
 		//Публикуем шаблоны
-		$this->publishes([__DIR__ . '/../resources/' => resource_path()]);
+//		$this->publishes([__DIR__ . '/../resources/' => resource_path()]);
 
 //
 		Schema::defaultStringLength(191);

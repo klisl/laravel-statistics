@@ -5,6 +5,9 @@ namespace Klisl\Statistics\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class KslStatistic extends Model{
+
+    protected $table = 'kslStatistics';
+
     const STAT_DEFAUL = 2; //2 дня + сегодняшний
 
     public $start_time;
@@ -14,21 +17,21 @@ class KslStatistic extends Model{
     public $del_old;
     public $reset;
 
-    public static function tableName()
-    {
-        return '{{%ksl_ip_count}}';
-    }
-
-    public function rules()
-    {
-        return [
-            [['ip'], 'required'],
-            [['str_url'], 'url'],
-            [['date_ip', 'start_time', 'stop_time', 'add_black_list', 'del_black_list', 'del_old', 'reset'], 'safe'],
-            [['black_list_ip'], 'boolean'],
-            [['comment'], 'string'],
-        ];
-    }
+//    public static function tableName()
+//    {
+//        return '{{%ksl_ip_count}}';
+//    }
+//
+//    public function rules()
+//    {
+//        return [
+//            [['ip'], 'required'],
+//            [['str_url'], 'url'],
+//            [['date_ip', 'start_time', 'stop_time', 'add_black_list', 'del_black_list', 'del_old', 'reset'], 'safe'],
+//            [['black_list_ip'], 'boolean'],
+//            [['comment'], 'string'],
+//        ];
+//    }
 
     //проверка наличия IP в черном списке (которые не надо выводить и сохранять в БД)
     //если есть хоть одна строка, то вернет true
@@ -51,9 +54,12 @@ class KslStatistic extends Model{
 
     public function getCount($condition = null, $days_ago = null){
 
+
+
         $sec_todey = time() - strtotime('today'); //сколько секунд прошло с начала дня
         //за сколько дней показывать по-умолчанию (позавчера/вчера/сегодня)
         if (!$days_ago) $days_ago = time() - (86400 * self::STAT_DEFAUL) - $sec_todey;
+//        dd(2);
 
         if(in_array( 'date_ip',$condition)) {
             $count_ip = $this->find()
@@ -62,6 +68,7 @@ class KslStatistic extends Model{
                 ->orderBy('date_ip desc')
                 ->all();
         } elseif($condition){
+
             $count_ip = $this->find()
                 ->where(['not',['black_list_ip' => 1]])
                 ->andWhere(['>','date_ip', $days_ago])
@@ -69,11 +76,22 @@ class KslStatistic extends Model{
                 ->orderBy('date_ip desc')
                 ->all();
         } else {
-            $count_ip = $this->find()
-                ->where(['not',['black_list_ip' => 1]])
-                ->andWhere(['>','date_ip', $days_ago])
-                ->orderBy('date_ip desc')
-                ->all();
+//            dd($this);
+//            $count_ip = $this
+//                ->where(['not',['black_list_ip' => 1]])
+//                ->andWhere(['>','date_ip', $days_ago])
+//                ->orderBy('date_ip desc')
+//                ->all();
+
+
+            $count_ip = $this
+//                ->whereColumn(['black_list_ip', '<', 1],
+//                    ['date_ip', '>', $days_ago])
+                ->where('black_list_ip', '<', 1)
+                ->where('created_at', '>', $days_ago)
+                ->orderBy('created_at')
+                ->get();
+
             //debug($days_ago);
         }
         return $count_ip;

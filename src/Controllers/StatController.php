@@ -8,27 +8,33 @@ namespace Klisl\Statistics\Controllers;
 //use common\modules\statistics\models\Count;
 //use common\modules\statistics\models\Bot;
 
+use Klisl\Statistics\Models\KslStatistic;
+use Illuminate\Http\Request;
+
 class StatController
 {
 
-    public function index()
+    public function index(Request $request)
     {
-		exit('111');
+//		exit('111');
 
-		$count_model = new Count(); //модель Count
-		$bot_model = new Bot(); //модель Bot
+		$count_model = new KslStatistic(); //модель Count
+//		$bot_model = new Bot(); //модель Bot
 		
 		$condition = [];
 		$days_ago = null;
 		$stat_ip = false;
 		
 		//Получение данных из формы для модели Count
-		if ($count_model->load(Yii::$app->request->post())){
+//		if ($count_model->load(Yii::$app->request->post())){
+        if($request->isMethod('post')){
+            $count_model = $request->all();
 			
 			//Сброс фильтров
-			if($count_model->reset){
-				$condition = [];
-			}				
+//			if($count_model->reset){
+//				$condition = [];
+//			}
+
 			//Вывод по дате
 			if($count_model->date_ip){
 				$timeUnix = strtotime($count_model->date_ip);
@@ -86,6 +92,9 @@ class StatController
 
 		//Получение списка статистики
 		$count_ip = $count_model->getCount($condition, $days_ago);
+
+		dd($count_ip);
+
 		/*
 		 * Устанавливаем значение полей по-умолчанию для вывода в полях формы
 		 */
@@ -100,4 +109,27 @@ class StatController
 			'stat_ip' => $stat_ip, //true если фильтр по определенному IP
 		]);
     }
+
+
+    //Проверяет, является ли посетитель роботом поисковой системы.
+    public function isBot(&$botname = ''){
+        $bots = array(
+            'rambler','googlebot','aport','yahoo','msnbot','turtle','mail.ru','omsktele',
+            'yetibot','picsearch','sape.bot','sape_context','gigabot','snapbot','alexa.com',
+            'megadownload.net','askpeter.info','igde.ru','ask.com','qwartabot','yanga.co.uk',
+            'scoutjet','similarpages','oozbot','shrinktheweb.com','aboutusbot','followsite.com',
+            'dataparksearch','google-sitemaps','appEngine-google','feedfetcher-google',
+            'liveinternet.ru','xml-sitemaps.com','agama','metadatalabs.com','h1.hrn.ru',
+            'googlealert.com','seo-rus.com','yaDirectBot','yandeG','yandex',
+            'yandexSomething','Copyscape.com','AdsBot-Google','domaintools.com',
+            'Nigma.ru','bing.com','dotnetdotcom'
+        );
+        foreach($bots as $bot)
+            if(stripos($_SERVER['HTTP_USER_AGENT'], $bot) !== false){
+                $botname = $bot;
+                return $botname;
+            }
+        return false;
+    }
+
 }
