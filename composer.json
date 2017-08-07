@@ -1,0 +1,29 @@
+{
+    "name": "klisl/laravel-statistics",
+    "description": "Package for getting statistics by IP for your site",
+	"type": "library",
+	"keywords": [
+        "laravel",
+        "statistics",
+        "statistics",
+        "statistics by IP"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sergey Klimenchuk",
+            "email": "ksl80@ukr.net",
+			"homepage": "https://github.com/klisl/laravel-statistics",
+			"role": "Developer"
+        }
+    ],
+	"minimum-stability": "stable",
+	"require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-4": {
+			"Klisl\\Statistics\\": "src"
+        }
+    }
+}

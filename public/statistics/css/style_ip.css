@@ -1,0 +1,84 @@
+#stat_ip{
+max-width: 1920px;
+border: 3px solid blue;
+margin-right: 10px;
+padding: 10px;
+/*padding-top: 10px;*/
+}
+.stat_center{
+text-align: center;
+color: blue;
+} 
+#stat_ip .get_table{
+    margin: 0 auto;
+    margin-bottom: 5px;
+}
+#stat_ip .get_table, #stat_ip .get_table th{
+border-collapse: collapse;  
+border: 3px solid green; 
+width: 90%;
+}  
+#stat_ip .get_table th, #stat_ip .get_table tr, #stat_ip table td {   
+border: 1px dashed green; 
+padding: 3px;  
+width: 20%;
+text-align: center;
+/*vertical-align: bottom;*/
+}
+#stat_ip .get_table th {
+    border: 3px solid green; 
+}
+
+#stat_ip .font_min{
+    font-size: 0.7em;
+}
+#stat_ip h3{
+    padding-top: 20px;
+}
+#stat_ip .get_table tr{ 
+    /*color: red;*/ 
+}
+.red {
+    color: red;
+}
+.tr_small{
+    display: inline-block;
+    
+}
+#stat_ip .get_table .tr_first  {
+    line-height: 40px;
+    font-weight: bold;
+    /*font-size: 1.1em;*/
+    border-top: 2px solid green; 
+    border-bottom: 1px solid green; 
+}
+
+/*#stat_ip .table_bot {
+    max-width: 1920px;
+    padding-top: 20px;
+    width: 90%;
+    border-collapse: collapse;  
+    margin-top: 20px;
+    margin-right: 10px;
+    padding: 10px;
+    border: 3px solid green; 
+}
+#stat_ip .table_bot tr th{
+	border: 3px solid green; 
+	text-align: center !important;
+}*/
+
+
+#stat_ip .form-group{
+    display: inline-block;
+    margin-bottom: 0px !important;
+}
+#stat_ip button[type='submit']{
+    margin-left: 5px;
+}
+#stat_ip hr{
+    /*margin-top: 0;*/
+}
+#stat_ip .button-reset{
+    text-align: center;
+}
