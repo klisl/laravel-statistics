@@ -59,40 +59,62 @@ class KslStatistic extends Model{
         $sec_todey = time() - strtotime('today'); //сколько секунд прошло с начала дня
         //за сколько дней показывать по-умолчанию (позавчера/вчера/сегодня)
         if (!$days_ago) $days_ago = time() - (86400 * self::STAT_DEFAUL) - $sec_todey;
+
+        $date_unix = $days_ago = time() - (86400 * self::STAT_DEFAUL) - $sec_todey;
+        //В формат 2017-08-05 00:00:00 как в БД
+        $days_ago = date("Y-m-d H:i:s",$date_unix);
+
+
+
+//        dd(date("Y/m/d",$date));
+
 //        dd(2);
 
         if(in_array( 'date_ip',$condition)) {
-            $count_ip = $this->find()
-                ->where(['not',['black_list_ip' => 1]])
-                ->andWhere($condition)
-                ->orderBy('date_ip desc')
-                ->all();
-        } elseif($condition){
-
-            $count_ip = $this->find()
-                ->where(['not',['black_list_ip' => 1]])
-                ->andWhere(['>','date_ip', $days_ago])
-                ->andWhere($condition)
-                ->orderBy('date_ip desc')
-                ->all();
-        } else {
-//            dd($this);
-//            $count_ip = $this
+//            $count_ip = $this->find()
 //                ->where(['not',['black_list_ip' => 1]])
-//                ->andWhere(['>','date_ip', $days_ago])
+//                ->andWhere($condition)
 //                ->orderBy('date_ip desc')
 //                ->all();
 
+            $count_ip = $this
+                ->where('black_list_ip', '<', 1)
+                ->where($condition)
+                ->orderBy('created_at')
+                ->get();
+
+
+
+
+        } elseif($condition){
+//            $count_ip = $this->find()
+//                ->where(['not',['black_list_ip' => 1]])
+//                ->andWhere(['>','date_ip', $days_ago])
+//                ->andWhere($condition)
+//                ->orderBy('date_ip desc')
+//                ->all();
 
             $count_ip = $this
-//                ->whereColumn(['black_list_ip', '<', 1],
-//                    ['date_ip', '>', $days_ago])
+                ->where('black_list_ip', '<', 1)
+                ->where('created_at', '>', $days_ago)
+                ->where($condition)
+                ->orderBy('created_at')
+                ->get();
+
+
+
+
+        } else {
+            $count_ip = $this
                 ->where('black_list_ip', '<', 1)
                 ->where('created_at', '>', $days_ago)
                 ->orderBy('created_at')
                 ->get();
 
-            //debug($days_ago);
+//            dump($this->first()->created_at);
+//            dump($days_ago);
+//            exit;
+
         }
         return $count_ip;
     }
