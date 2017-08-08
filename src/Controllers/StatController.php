@@ -10,81 +10,28 @@ namespace Klisl\Statistics\Controllers;
 
 use Klisl\Statistics\Models\KslStatistic;
 use Illuminate\Http\Request;
-use Html;
+//use Html;
 
 
 class StatController
 {
 
-    public function index(Request $request)
+    public function index($condition = [], $days_ago = null)
     {
-
+//        dd($condition);
 
 //		exit('111');
 
 		$count_model = new KslStatistic(); //модель Count
 //		$bot_model = new Bot(); //модель Bot
 		
-		$condition = [];
-		$days_ago = null;
+//		$condition = [];
+//		$days_ago = null;
 		$stat_ip = false;
 		
 		//Получение данных из формы для модели Count
 //		if ($count_model->load(Yii::$app->request->post())){
-        if($request->isMethod('post')){
-            $count_model = $request->all();
-			
-			//Сброс фильтров
-//			if($count_model->reset){
-//				$condition = [];
-//			}
 
-			//Вывод по дате
-			if($count_model->date_ip){
-				$timeUnix = strtotime($count_model->date_ip);
-				$time_max = $timeUnix + 86400;
-				//debug($count_model);
-				
-				$condition = ["between", "date_ip", $timeUnix , $time_max];				
-			}
-			//За период
-			if($count_model->start_time){
-				
-				$timeStartUnix = strtotime($count_model->start_time);
-				//Если не передана дата конца - ставим текущую
-				if(!$count_model->stop_time) {
-					$timeStopUnix = time();
-				} else {
-					$timeStopUnix = strtotime($count_model->stop_time);
-				}
-				$timeStopUnix += 86400; //целый день (до конца суток)
-				$condition = ["between", "date_ip", $timeStartUnix , $timeStopUnix];	
-			}
-			//По IP
-			if($count_model->ip){
-				$condition = ["ip" => $count_model->ip];
-				$days_ago = 86400 * 30; //за 30 дней
-				$stat_ip = true;
-			}
-			//Добавить в черный список
-			if($count_model->add_black_list){
-				$count_model->set_black_list($count_model->ip, $count_model->comment);
-				$condition = [];
-				$days_ago = null;
-			}
-			//Удалить из черного списка
-			if($count_model->del_black_list){
-				$count_model->remove_black_list($count_model->ip);
-				$condition = [];
-				$days_ago = null;
-			}		
-			//Удалить старые данные
-			if($count_model->del_old){
-				$count_model->remove_old();
-				Yii::$app->end();  //PJAX
-			}			
-			$count_model = new Count(); //новый объект модели для очистки формы
-		}
 		
 //		//Статистика по поисковым ботам
 //		if ($bot_model->load(Yii::$app->request->post())){
@@ -143,4 +90,104 @@ class StatController
         return false;
     }
 
+
+    public function forms(Request $request){
+
+        $condition = [];
+		$days_ago = null;
+
+            $count_model = $request->except('_token');
+//            dd($count_model);
+            //Сброс фильтров
+			if(isset($count_model['reset'])){
+				$condition = [];
+			}
+//
+//            //Вывод по дате
+//            if($count_model->date_ip){
+//                $timeUnix = strtotime($count_model->date_ip);
+//                $time_max = $timeUnix + 86400;
+//                //debug($count_model);
+//
+//                $condition = ["between", "date_ip", $timeUnix , $time_max];
+//            }
+            if(isset($count_model['date_ip'])){
+
+
+
+                $timeUnix = strtotime($count_model['date_ip']);
+                $time = date("Y-m-d H:i:s",$timeUnix);
+
+//                $time = $count_model['date_ip']
+
+                $time_max = date("Y-m-d H:i:s",$timeUnix + 86400);
+//                dump($time);
+//                dump($time_max);
+//                dump($timeUnix);
+//                dd($time_max);
+                $condition = ["created_at", $time , $time_max];
+            }
+
+
+//            //За период
+//            if($count_model->start_time){
+//
+//                $timeStartUnix = strtotime($count_model->start_time);
+//                //Если не передана дата конца - ставим текущую
+//                if(!$count_model->stop_time) {
+//                    $timeStopUnix = time();
+//                } else {
+//                    $timeStopUnix = strtotime($count_model->stop_time);
+//                }
+//                $timeStopUnix += 86400; //целый день (до конца суток)
+//                $condition = ["between", "date_ip", $timeStartUnix , $timeStopUnix];
+//            }
+
+            //За период
+            if($count_model['start_time']){
+
+                $timeStartUnix = strtotime($count_model['start_time']);
+                //Если не передана дата конца - ставим текущую
+                if(!isset($count_model['stop_time'])) {
+                    $timeStopUnix = date("Y-m-d H:i:s",time());
+                } else {
+                    $timeStopUnix = strtotime($count_model['stop_time']);
+                }
+                $timeStopUnix += 86400; //целый день (до конца суток)
+                $condition = ["created_at", $timeStartUnix , $timeStopUnix];
+            }
+
+
+
+
+
+
+//            //По IP
+//            if($count_model->ip){
+//                $condition = ["ip" => $count_model->ip];
+//                $days_ago = 86400 * 30; //за 30 дней
+//                $stat_ip = true;
+//            }
+//            //Добавить в черный список
+//            if($count_model->add_black_list){
+//                $count_model->set_black_list($count_model->ip, $count_model->comment);
+//                $condition = [];
+//                $days_ago = null;
+//            }
+//            //Удалить из черного списка
+//            if($count_model->del_black_list){
+//                $count_model->remove_black_list($count_model->ip);
+//                $condition = [];
+//                $days_ago = null;
+//            }
+//            //Удалить старые данные
+//            if($count_model->del_old){
+//                $count_model->remove_old();
+//                Yii::$app->end();  //PJAX
+//            }
+//            $count_model = new Count(); //новый объект модели для очистки формы
+
+
+        return $this->index($condition, $days_ago);
+    }
 }

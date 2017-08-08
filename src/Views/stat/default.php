@@ -26,8 +26,10 @@
 
 			//кол-во посетителей по дням (вывод последнего дня после цикла)
 			if($date && $date != $value->created_at->format('d.m.Y')) {
-				echo $date . ' - '. $count_day . '<br>';				
-				$date = date("d.m.Y",$value->created_at->format('d.m.Y'));
+				echo $date . ' - '. $count_day . '<br>';
+
+				$date = $value->created_at->format('d.m.Y');
+//                dd($value->created_at->format('d.m.Y'));
 				$count_day = 0;
 			}
 			if ($stat_ip) $count_day++; //для фильтра по определенному IP

@@ -1,14 +1,22 @@
-<?php 
-//	use yii\widgets\ActiveForm;
-//	use yii\helpers\Html;
-//	use yii\jui\DatePicker;
-//	use yii\widgets\Pjax;
-	
-//	common\modules\statistics\assets\StatAsset::register($this); //стили
-?>  
-    
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.css" rel="stylesheet">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
+	{{--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>--}}
+	{{--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">--}}
+</head>
+    <body></body>
     <h3 class="stat_center">Статистика посещений по IP</h3>
     <div id="stat_ip">
+
+		{{--{!! Html::link('ссылка','name') !!}--}}
 
     <?php
 //		echo $this->render('default',[
@@ -24,64 +32,83 @@
 	])
 
 
-	<?php $form = ActiveForm::begin(); ?>
-		<?=$form->field($count_model, 'reset')->hiddenInput(['value' => true])->label(false)?>
-		<div class="button-reset">
-			<?=Html::submitButton('Сбросить фильтры'); ?>
+		{!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
+
+		{{ Form::hidden('reset', true)}}
+		{!! Form::button('Сбросить фильтры',['class'=>'button-reset','type'=>'submit']) !!}
+
+		{!! Form::close() !!}
+
+
+
+
+
+		{{--<div class="container">--}}
+
+			{{--<h1>Laravel Bootstrap Datepicker</h1>--}}
+
+			{{--<input class="date form-control" type="text">--}}
+
+		{{--</div>--}}
+
+
+
+
+
+
+		<hr>
+
+
+
+		<h3>Сформировать за указанную дату</h3>
+		{!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
+
+		{!! Form::text('date_ip', '',['class'=>'date_ip']) !!}
+		{{--{{ Form::hidden('reset', true)}}--}}
+		{!! Form::button('Отфильтровать',['class'=>'button-reset','type'=>'submit']) !!}
+
+		{!! Form::close() !!}
+
+
+
+
+
+
+	<hr>
+
+
+
+
+		<h3>Сформировать за выбранный период </h3>
+		{!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
+
+		<div class="form-group">
+		{{ Form::label('Начало', null, ['class' => 'control-label']) }}
+		{!! Form::text('start_time', '',['class'=>'date_ip']) !!}
 		</div>
-	<?php ActiveForm::end(); ?>
+
+		{{ Form::label('Конец', null, ['class' => 'control-label']) }}
+		{!! Form::text('stop_time', '',['class'=>'date_ip']) !!}
 
 
+		{{--{{ Form::hidden('reset', true)}}--}}
+		{!! Form::button('Отфильтровать',['class'=>'button-reset','type'=>'submit']) !!}
+
+		{!! Form::close() !!}
 
 
+		<script type="text/javascript">
 
-	<hr>
+            $('.date_ip').datepicker({
 
-	<?php $form = ActiveForm::begin(); ?>
-        <h3>Сформировать за указанную дату</h3>
-		<?=$form->field($count_model, 'date_ip')->widget(DatePicker ::classname(), [
-			'dateFormat' => 'dd.MM.yyyy',
-			'language' => 'ru',
-			'clientOptions' => [
-				'yearRange' => '2015:2025',
-				'changeMonth' => 'true',
-				'changeYear' => 'true',
-				'firstDay' => '1',
-			]
-		])->label(false) ?>
-		<?=Html::submitButton('Отфильтровать'); ?>
-	<?php ActiveForm::end(); ?>
-	<hr>
+                format: 'yyyy-mm-dd'
 
-		<?php $form = ActiveForm::begin(); ?>
+            });
 
-        <h3>Сформировать за выбранный период </h3>
-		<?=$form->field($count_model, 'start_time')->widget(DatePicker ::classname(), [
-			'dateFormat' => 'dd.MM.yyyy',
-			'language' => 'ru',
-		  'clientOptions' => [
-				'yearRange' => '2015:2025',
-				'changeMonth' => 'true',
-				'changeYear' => 'true',
-				'firstDay' => '1',
-			]
-		])->label('Начало') ?>
-		<?=$form->field($count_model, 'stop_time')->widget(DatePicker ::classname(), [
-			'dateFormat' => 'dd.MM.yyyy',
-			'language' => 'ru',
-		  'clientOptions' => [
-				'yearRange' => '2015:2025',
-				'changeMonth' => 'true',
-				'changeYear' => 'true',
-				'firstDay' => '1',
-			]
-		])->label('Конец &nbsp;')  ?>
-		<?=Html::submitButton('Отфильтровать'); ?>
-
-	<?php ActiveForm::end(); ?>
-	<hr>
+		</script>
 
 
+		<hr>
 	<?php $form = ActiveForm::begin(); ?>
 
         <h3>Сформировать по определенному IP</h3>
@@ -173,3 +200,17 @@
 
 
 	</div>
+
+
+<script type="text/javascript">
+
+    $('.date_ip').datepicker({
+
+        format: 'mm-dd-yyyy'
+
+    });
+
+</script>
+
+</body>
+</html>

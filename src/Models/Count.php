@@ -51,18 +51,24 @@ class Count extends ActiveRecord
 	}
 	
 	public function getCount($condition = null, $days_ago = null){
-		
+        dd($condition);
 		$sec_todey = time() - strtotime('today'); //сколько секунд прошло с начала дня
 		//за сколько дней показывать по-умолчанию (позавчера/вчера/сегодня)
 		if (!$days_ago) $days_ago = time() - (86400 * self::STAT_DEFAUL) - $sec_todey;
-				
+
 		if(in_array( 'date_ip',$condition)) {
+            dd(111);
 			$count_ip = $this->find()
-					->where(['not',['black_list_ip' => 1]])
-					->andWhere($condition)
-					->orderBy('date_ip desc')
+					->where(['not',['black_list_ip' => 1]]);
+
+			if($condition){
+                $count_ip->whereBetween($condition[0], [$condition[1], $condition[2]]);
+            };
+
+			$count_ip ->orderBy('date_ip desc')
 					->all();
 		} elseif($condition){
+            dd(222);
 			$count_ip = $this->find()
 					->where(['not',['black_list_ip' => 1]])
 					->andWhere(['>','date_ip', $days_ago])
@@ -70,6 +76,7 @@ class Count extends ActiveRecord
 					->orderBy('date_ip desc')
 					->all();
 		} else {
+            dd(333);
 			$count_ip = $this->find()
 					->where(['not',['black_list_ip' => 1]])
 					->andWhere(['>','date_ip', $days_ago])

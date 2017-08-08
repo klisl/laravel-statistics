@@ -13,6 +13,11 @@ class StatisticsServiceProvider extends ServiceProvider
 	
     public function boot()
     {
+        //Регистрация алиасов для стороннего пакета laravelcollective/html
+        $loader = \Illuminate\Foundation\AliasLoader::getInstance();
+        $loader->alias('Html', 'Collective\Html\HtmlFacade');
+        $loader->alias('Form', 'Collective\Html\FormFacade');
+
 
         include __DIR__.'/routes.php';
 
@@ -47,7 +52,11 @@ class StatisticsServiceProvider extends ServiceProvider
 	
     public function register()
     {
+        // Регистрация сервис-провайдера стороннего пакета, указанного в зависимостях
+        \App::register('Collective\Html\HtmlServiceProvider');
 
-	}
+
+
+    }
 
 }

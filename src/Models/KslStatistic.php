@@ -70,7 +70,8 @@ class KslStatistic extends Model{
 
 //        dd(2);
 
-        if(in_array( 'date_ip',$condition)) {
+        if(in_array( 'created_at',$condition)) {
+//            dump($condition);
 //            $count_ip = $this->find()
 //                ->where(['not',['black_list_ip' => 1]])
 //                ->andWhere($condition)
@@ -78,15 +79,21 @@ class KslStatistic extends Model{
 //                ->all();
 
             $count_ip = $this
-                ->where('black_list_ip', '<', 1)
-                ->where($condition)
-                ->orderBy('created_at')
+                ->where('black_list_ip', '<', 1);
+
+//                ->where($condition)
+            if($condition){
+                $count_ip = $count_ip->whereBetween($condition[0], [$condition[1], $condition[2]]);
+            };
+
+            $count_ip = $count_ip->orderBy('created_at')
                 ->get();
 
-
+//dd($count_ip);
 
 
         } elseif($condition){
+//            dump($condition);
 //            $count_ip = $this->find()
 //                ->where(['not',['black_list_ip' => 1]])
 //                ->andWhere(['>','date_ip', $days_ago])
@@ -95,13 +102,19 @@ class KslStatistic extends Model{
 //                ->all();
 
             $count_ip = $this
-                ->where('black_list_ip', '<', 1)
-                ->where('created_at', '>', $days_ago)
-                ->where($condition)
+                ->where('black_list_ip', '<', 1);
+//                ->where('created_at', '>', $days_ago);
+
+             if($condition){
+
+                 $count_ip = $count_ip->whereBetween($condition[0], [$condition[1], $condition[2]]);
+             };
+
+            $count_ip = $count_ip
                 ->orderBy('created_at')
                 ->get();
-
-
+//            dd($count_ip);
+//            dd($count_ip);
 
 
         } else {
