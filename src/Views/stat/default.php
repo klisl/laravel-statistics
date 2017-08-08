@@ -6,9 +6,10 @@
 	$num_ip = ''; 
 	//получаем первую дату из массива объектов
 	if (isset($count_ip[0])){
-		$date = date("d.m.Y",$count_ip[0]->date_ip);
+		$date = $count_ip[0]->created_at->format('d.m.Y');
 	} else $date = null;
-	
+
+//	dd($count_ip[0]->created_at->format('d.m.Y'));
 	?>
 	 
 	<table class='get_table'>
@@ -24,9 +25,9 @@
 	<?php foreach ($count_ip as $key=>$value){
 
 			//кол-во посетителей по дням (вывод последнего дня после цикла)
-			if($date && $date != date("d.m.Y",$value->date_ip)) {				
+			if($date && $date != $value->created_at->format('d.m.Y')) {
 				echo $date . ' - '. $count_day . '<br>';				
-				$date = date("d.m.Y",$value->date_ip);				
+				$date = date("d.m.Y",$value->created_at->format('d.m.Y'));
 				$count_day = 0;
 			}
 			if ($stat_ip) $count_day++; //для фильтра по определенному IP
@@ -50,7 +51,7 @@
 			echo "<td>$transition</td>
 				<td><a href='http://speed-tester.info/ip_location.php?ip=".$value->ip."'>".$value->ip."</a></td>  	
 				<td><a href='".$value->str_url."'>".$value->str_url."</a></td>                     
-				<td>".date("d.m.Y H:i:s",$value->date_ip)."</td></tr>";   
+				<td>".$value->created_at->format('d.m.Y')."</td></tr>";
 			  
 	}
 				//вывод кол-ва посетителей за последнее число 

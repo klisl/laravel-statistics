@@ -34,10 +34,13 @@ class StatisticsServiceProvider extends ServiceProvider
 		//Публикуем стили
 		$this->publishes([__DIR__ . '/../public/' => public_path()]);
 
-		//Публикуем шаблоны
-//		$this->publishes([__DIR__ . '/../resources/' => resource_path()]);
 
-//
+        /*
+         * Регистрируется (добавляем) каталог для хранения шаблонов
+         */
+        $this->loadViewsFrom(__DIR__ . '/views/stat', 'Views');
+
+
 		Schema::defaultStringLength(191);
     }
 

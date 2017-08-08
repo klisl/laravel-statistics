@@ -10,12 +10,16 @@ namespace Klisl\Statistics\Controllers;
 
 use Klisl\Statistics\Models\KslStatistic;
 use Illuminate\Http\Request;
+use Html;
+
 
 class StatController
 {
 
     public function index(Request $request)
     {
+
+
 //		exit('111');
 
 		$count_model = new KslStatistic(); //модель Count
@@ -93,7 +97,7 @@ class StatController
 		//Получение списка статистики
 		$count_ip = $count_model->getCount($condition, $days_ago);
 
-		dd($count_ip);
+//		dd($count_ip);
 
 		/*
 		 * Устанавливаем значение полей по-умолчанию для вывода в полях формы
@@ -102,12 +106,19 @@ class StatController
 		$count_model->start_time = date('Y-m-01'); //первое число текущего месяца
 		$count_model->stop_time = time(); //сегодня
 				
-        return $this->render('index',[
-			'count_model'=> $count_model,			
-//			'bot_model'=> $bot_model,
+//        return $this->render('index',[
+//			'count_model'=> $count_model,
+////			'bot_model'=> $bot_model,
+//			'count_ip'=> $count_ip, //статистика
+//			'stat_ip' => $stat_ip, //true если фильтр по определенному IP
+//		]);
+
+
+        return view('Views::index',[
+            'count_model'=> $count_model,
 			'count_ip'=> $count_ip, //статистика
 			'stat_ip' => $stat_ip, //true если фильтр по определенному IP
-		]);
+        ]);
     }
 
 
