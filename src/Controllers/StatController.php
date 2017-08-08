@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 class StatController
 {
 
-    public function index($condition = [], $days_ago = null)
+    public function index($condition = [], $days_ago = null, $stat_ip=false)
     {
 //        dd($condition);
 
@@ -27,7 +27,7 @@ class StatController
 		
 //		$condition = [];
 //		$days_ago = null;
-		$stat_ip = false;
+//		$stat_ip = false;
 		
 		//Получение данных из формы для модели Count
 //		if ($count_model->load(Yii::$app->request->post())){
@@ -59,12 +59,14 @@ class StatController
 //			'count_ip'=> $count_ip, //статистика
 //			'stat_ip' => $stat_ip, //true если фильтр по определенному IP
 //		]);
+        $black_list = $count_model->count_black_list();
 
 
         return view('Views::index',[
             'count_model'=> $count_model,
 			'count_ip'=> $count_ip, //статистика
 			'stat_ip' => $stat_ip, //true если фильтр по определенному IP
+            'black_list' => $black_list
         ]);
     }
 
@@ -95,6 +97,9 @@ class StatController
 
         $condition = [];
 		$days_ago = null;
+        $stat_ip = false;
+
+        $model = new KslStatistic();
 
             $count_model = $request->except('_token');
 //            dd($count_model);
@@ -115,16 +120,20 @@ class StatController
 
 
 
-                $timeUnix = strtotime($count_model['date_ip']);
-                $time = date("Y-m-d H:i:s",$timeUnix);
+                $time = strtotime($count_model['date_ip']);
 
-//                $time = $count_model['date_ip']
 
-                $time_max = date("Y-m-d H:i:s",$timeUnix + 86400);
-//                dump($time);
-//                dump($time_max);
-//                dump($timeUnix);
-//                dd($time_max);
+
+//                $time = $count_model['date_ip'];
+
+
+                $time_max = $time + 86400;
+//                $time_max = date("Y-m-d",time() + 86400);
+
+
+
+                dump($time);
+                dump($time_max);
                 $condition = ["created_at", $time , $time_max];
             }
 
@@ -144,7 +153,7 @@ class StatController
 //            }
 
             //За период
-            if($count_model['start_time']){
+            if(isset($count_model['start_time'])){
 
                 $timeStartUnix = strtotime($count_model['start_time']);
                 //Если не передана дата конца - ставим текущую
@@ -168,26 +177,35 @@ class StatController
 //                $days_ago = 86400 * 30; //за 30 дней
 //                $stat_ip = true;
 //            }
-//            //Добавить в черный список
-//            if($count_model->add_black_list){
-//                $count_model->set_black_list($count_model->ip, $count_model->comment);
-//                $condition = [];
-//                $days_ago = null;
-//            }
-//            //Удалить из черного списка
-//            if($count_model->del_black_list){
-//                $count_model->remove_black_list($count_model->ip);
-//                $condition = [];
-//                $days_ago = null;
-//            }
-//            //Удалить старые данные
-//            if($count_model->del_old){
-//                $count_model->remove_old();
-//                Yii::$app->end();  //PJAX
-//            }
-//            $count_model = new Count(); //новый объект модели для очистки формы
+
+            //По IP
+            if(isset($count_model['ip'])){
+                $condition = ["ip" => $count_model['ip']];
+//                $days_ago = 86400 * 30; //за 30 дней
+                $stat_ip = true;
+            }
 
 
-        return $this->index($condition, $days_ago);
+            //Добавить в черный список
+            if(isset($count_model['add_black_list'])){
+
+                $model->set_black_list($count_model['ip'], $count_model['comment']);
+                $condition = [];
+                $days_ago = null;
+            }
+
+            //Удалить из черного списка
+            if(isset($count_model['del_black_list'])){
+                $model->remove_black_list($count_model['ip']);
+                $condition = [];
+                $days_ago = null;
+            }
+
+            //Удалить старые данные
+            if(isset($count_model['del_old'])){
+                $model->remove_old();
+            }
+
+        return $this->index($condition, $days_ago, $stat_ip);
     }
 }

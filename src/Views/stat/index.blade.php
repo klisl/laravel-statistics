@@ -3,33 +3,33 @@
 <head>
 	<meta charset="utf-8">
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.css" rel="stylesheet">
-
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
 	{{--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>--}}
 	{{--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">--}}
+
+    <link href="{{asset('ksl-stat/css/style_ip.css')}}" rel="stylesheet">
+
 </head>
-    <body></body>
+    <body>
     <h3 class="stat_center">Статистика посещений по IP</h3>
     <div id="stat_ip">
 
-		{{--{!! Html::link('ссылка','name') !!}--}}
 
-    <?php
-//		echo $this->render('default',[
-//		'count_ip'=> $count_ip,
-//		'stat_ip' => $stat_ip,
-//	]);
-    ?>
+        @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
 
 
-	@include('Views::default', [
-		'count_ip'=> $count_ip,
-		'stat_ip' => $stat_ip,
-	])
+
+
+        @include('Views::default', [
+            'count_ip'=> $count_ip,
+            'stat_ip' => $stat_ip,
+        ])
 
 
 		{!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
@@ -87,9 +87,10 @@
 		{!! Form::text('start_time', '',['class'=>'date_ip']) !!}
 		</div>
 
+        <div class="form-group">
 		{{ Form::label('Конец', null, ['class' => 'control-label']) }}
 		{!! Form::text('stop_time', '',['class'=>'date_ip']) !!}
-
+        </div>
 
 		{{--{{ Form::hidden('reset', true)}}--}}
 		{!! Form::button('Отфильтровать',['class'=>'button-reset','type'=>'submit']) !!}
@@ -97,28 +98,34 @@
 		{!! Form::close() !!}
 
 
-		<script type="text/javascript">
 
-            $('.date_ip').datepicker({
-
-                format: 'yyyy-mm-dd'
-
-            });
-
-		</script>
 
 
 		<hr>
-	<?php $form = ActiveForm::begin(); ?>
+
+
 
         <h3>Сформировать по определенному IP</h3>
-		<?=$form->field($count_model, 'ip', [
-		'inputOptions' => [
-			'size'=> 20,
-		]])->textInput(['value'=>'127.0.0.1'])->label('IP') ?>
-		<?=Html::submitButton('Отфильтровать'); ?>
+        {!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
 
-	<?php ActiveForm::end(); ?>
+        <div class="form-group">
+            {{ Form::label('IP', null, ['class' => 'control-label']) }}
+            {!! Form::text('ip', '127.0.0.1') !!}
+        </div>
+
+
+
+        {{--{{ Form::hidden('reset', true)}}--}}
+        {!! Form::button('Отфильтровать',['class'=>'button-reset','type'=>'submit']) !!}
+
+        {!! Form::close() !!}
+
+
+
+
+
+
+
 	<hr>
 
 
@@ -131,7 +138,7 @@
     <table>
         <tr class='tr_small'>
         <?php
-        $black_list = $count_model->count_black_list();
+//        $black_list = $count_model->count_black_list();
 		//debug($black_list);
 		echo "<h4>Сейчас в черном списке:</h4>";
         foreach($black_list as $key=>$value){
@@ -145,72 +152,75 @@
     </table>
     <br>
 
-	<?php $form = ActiveForm::begin(); ?>
-
-            <?=$form->field($count_model, 'ip', [
-		'inputOptions' => [
-			'size'=> 20,
-		]])->textInput(['value'=>'127.0.0.1'])->label('IP') ?>
-
-            <?=$form->field($count_model, 'comment', [
-		'inputOptions' => [
-			'size'=> 20,
-		]])->label('Комментарий') ?>
 
 
 
-	<?=$form->field($count_model, 'add_black_list')->hiddenInput(['value' => true])->label(false)?>
-	<?=Html::submitButton('Добавить в черный список'); ?>
-	<?php ActiveForm::end(); ?>
+
+
+
+
+
+
+    {!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
+    <div class="form-group">
+        {{ Form::label('IP', null, ['class' => 'control-label']) }}
+        {!! Form::text('ip', '127.0.0.1') !!}
+    </div>
+    <div class="form-group">
+        {{ Form::label('Комментарий', null, ['class' => 'control-label']) }}
+        {!! Form::text('comment') !!}
+    </div>
+    {{ Form::hidden('add_black_list', true)}}
+    {!! Form::button('Добавить в черный список',['type'=>'submit']) !!}
+    {!! Form::close() !!}
+
+
+
+
+
+
+
 
 	<br>
-	<?php $form = ActiveForm::begin(); ?>
-	<?=$form->field($count_model, 'ip', [
-		'inputOptions' => [
-			'size'=> 20,
-		]])->textInput(['value'=>'127.0.0.1'])->label('IP') ?>
-	<?=$form->field($count_model, 'del_black_list')->hiddenInput(['value' => true])->label(false)?>
-	<?=Html::submitButton('Удалить из черного списка'); ?>
-
-	<?php ActiveForm::end(); ?>
-	<hr>
-
- <h3>Статистика по поисковым роботам за последний месяц</h3>
-	<?php Pjax::begin(['enablePushState' => false]); ?>
- 	<?php $form = ActiveForm::begin([
-		'options' => [
-			'data-pjax' => true,
-		]]); ?>
-	<?=$form->field($bot_model, 'get_bot_stat')->hiddenInput(['value' => true])->label(false)?>
-	<?=Html::submitButton('Сформировать'); ?>
-	<?php ActiveForm::end(); ?>
-	<?php Pjax::end(); ?>
-	<hr>
-
-	<h3>Очистка базы данных <span class="font_min">(старше 90 дней)</span></h3>
-	<?php Pjax::begin(['enablePushState' => false]); ?>
- 	<?php $form = ActiveForm::begin([
-		'options' => [
-			'data-pjax' => true,
-		]]); ?>
-	<?=$form->field($count_model, 'del_old')->hiddenInput(['value' => true])->label(false)?>
-	<?=Html::submitButton('Удалить старые данные'); ?>
-	<?php ActiveForm::end(); ?>
-	<?php Pjax::end(); ?>
 
 
-	</div>
+
+    {!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
+    <div class="form-group">
+        {{ Form::label('IP', null, ['class' => 'control-label']) }}
+        {!! Form::text('ip', '127.0.0.1') !!}
+    </div>
+
+    {{ Form::hidden('del_black_list', true)}}
+    {!! Form::button('Удалить из черного списка',['type'=>'submit']) !!}
+    {!! Form::close() !!}
 
 
-<script type="text/javascript">
 
-    $('.date_ip').datepicker({
+        <h3>Очистка базы данных <span class="font_min">(старше 90 дней)</span></h3>
 
-        format: 'mm-dd-yyyy'
+        {!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
+        {{ Form::hidden('del_old', true)}}
+        {!! Form::button('Удалить старые данные',['type'=>'submit']) !!}
+        {!! Form::close() !!}
 
-    });
 
-</script>
+
+
+
+
+
+
+
+    <script type="text/javascript">
+
+        $('.date_ip').datepicker({
+
+            format: 'yyyy-mm-dd'
+
+        });
+
+    </script>
 
 </body>
 </html>
