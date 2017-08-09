@@ -3,14 +3,10 @@
 //namespace App\Http\Controllers;
 namespace Klisl\Statistics\Controllers;
 
-//use Yii;
-//use yii\web\Controller;
-//use common\modules\statistics\models\Count;
-//use common\modules\statistics\models\Bot;
 
 use Klisl\Statistics\Models\KslStatistic;
 use Illuminate\Http\Request;
-//use Html;
+
 
 
 class StatController
@@ -44,7 +40,7 @@ class StatController
 		//Получение списка статистики
 		$count_ip = $count_model->getCount($condition, $days_ago);
 
-//		dd($count_ip);
+//		dd($days_ago);
 
 		/*
 		 * Устанавливаем значение полей по-умолчанию для вывода в полях формы
@@ -97,6 +93,8 @@ class StatController
 
         $condition = [];
 		$days_ago = null;
+//        $days_ago = time() - (86400 * self::STAT_DEFAUL) - $sec_todey;
+
         $stat_ip = false;
 
         $model = new KslStatistic();
@@ -107,61 +105,37 @@ class StatController
 			if(isset($count_model['reset'])){
 				$condition = [];
 			}
-//
-//            //Вывод по дате
-//            if($count_model->date_ip){
-//                $timeUnix = strtotime($count_model->date_ip);
-//                $time_max = $timeUnix + 86400;
-//                //debug($count_model);
-//
-//                $condition = ["between", "date_ip", $timeUnix , $time_max];
-//            }
+
             if(isset($count_model['date_ip'])){
 
-
-
                 $time = strtotime($count_model['date_ip']);
-
-
-
 //                $time = $count_model['date_ip'];
 
 
                 $time_max = $time + 86400;
 //                $time_max = date("Y-m-d",time() + 86400);
 
-
-
-                dump($time);
-                dump($time_max);
                 $condition = ["created_at", $time , $time_max];
             }
 
 
-//            //За период
-//            if($count_model->start_time){
-//
-//                $timeStartUnix = strtotime($count_model->start_time);
-//                //Если не передана дата конца - ставим текущую
-//                if(!$count_model->stop_time) {
-//                    $timeStopUnix = time();
-//                } else {
-//                    $timeStopUnix = strtotime($count_model->stop_time);
-//                }
-//                $timeStopUnix += 86400; //целый день (до конца суток)
-//                $condition = ["between", "date_ip", $timeStartUnix , $timeStopUnix];
-//            }
 
             //За период
-            if(isset($count_model['start_time'])){
+            if(isset($count_model['period'])){
 
-                $timeStartUnix = strtotime($count_model['start_time']);
+                if(isset($count_model['start_time'])){
+                    $timeStartUnix = strtotime($count_model['start_time']);
+                } else {
+                    $timeStartUnix = 0;
+                }
+
                 //Если не передана дата конца - ставим текущую
                 if(!isset($count_model['stop_time'])) {
-                    $timeStopUnix = date("Y-m-d H:i:s",time());
+                    $timeStopUnix = time();
                 } else {
                     $timeStopUnix = strtotime($count_model['stop_time']);
                 }
+
                 $timeStopUnix += 86400; //целый день (до конца суток)
                 $condition = ["created_at", $timeStartUnix , $timeStopUnix];
             }
@@ -169,36 +143,26 @@ class StatController
 
 
 
-
-
-//            //По IP
-//            if($count_model->ip){
-//                $condition = ["ip" => $count_model->ip];
-//                $days_ago = 86400 * 30; //за 30 дней
-//                $stat_ip = true;
-//            }
-
             //По IP
-            if(isset($count_model['ip'])){
+            if(isset($count_model['search_ip'])){
+
                 $condition = ["ip" => $count_model['ip']];
-//                $days_ago = 86400 * 30; //за 30 дней
                 $stat_ip = true;
+
+                if(!$count_model['ip']) session()->flash('error', 'Укажите IP для поиска');
             }
 
 
             //Добавить в черный список
-            if(isset($count_model['add_black_list'])){
+            if(isset($count_model['ip'])){
 
+                if(!isset($count_model['comment'])) $count_model['comment'] ='';
                 $model->set_black_list($count_model['ip'], $count_model['comment']);
-                $condition = [];
-                $days_ago = null;
             }
 
             //Удалить из черного списка
             if(isset($count_model['del_black_list'])){
                 $model->remove_black_list($count_model['ip']);
-                $condition = [];
-                $days_ago = null;
             }
 
             //Удалить старые данные

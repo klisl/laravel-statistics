@@ -1,5 +1,5 @@
 <?php
-	//debug($count_ip);
+
 	$transition = 1; //счетчик переходов на страницы
 	$count = 0; //счетчик посетителей
 	$count_day = 0;
@@ -9,19 +9,18 @@
 		$date = $count_ip[0]->created_at->format('d.m.Y');
 	} else $date = null;
 
-//	dd($count_ip[0]->created_at->format('d.m.Y'));
-	?>
+?>
 	 
-	<table class='get_table'>
-			<thead>
-			 <tr>
-				<th>Переходы на страницы сайта</th>
-				<th>IP</th>
-				<th>URL просматриваемой страницы</th>
-				<th>Время посещения</th>
-			</tr>
-			</thead>
-			<tbody> 
+<table class='get_table'>
+    <thead>
+     <tr>
+        <th>Переходы на страницы сайта</th>
+        <th>IP</th>
+        <th>URL просматриваемой страницы</th>
+        <th>Время посещения</th>
+    </tr>
+    </thead>
+    <tbody>
 	<?php foreach ($count_ip as $key=>$value){
 
 			//кол-во посетителей по дням (вывод последнего дня после цикла)
@@ -42,7 +41,7 @@
 				if (!$stat_ip) $count_day++; //для фильтра по определенному IP
 			} else {
 				$transition++;
-			} 
+			}
 
 			echo "<tr ";
 			if ($transition == 1) {
@@ -52,7 +51,7 @@
 		    }
 			echo "<td>$transition</td>
 				<td><a href='http://speed-tester.info/ip_location.php?ip=".$value->ip."'>".$value->ip."</a></td>  	
-				<td><a href='".$value->str_url."'>".$value->str_url."</a></td>                     
+				<td><a href='".$value->str_url."' target=\"_blank\">".$value->str_url."</a></td>                     
 				<td>".$value->created_at->format('d.m.Y')."</td></tr>";
 			  
 	}

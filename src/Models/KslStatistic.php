@@ -8,7 +8,9 @@ class KslStatistic extends Model{
 
     protected $table = 'kslStatistics';
 
-    const STAT_DEFAUL = 2; //2 дня + сегодняшний
+    protected $guarded = [];
+
+    const STAT_DEFAUL = 3; //выводить за 3 дня по-умолчанию
 
     public $start_time;
     public $stop_time;
@@ -58,12 +60,12 @@ class KslStatistic extends Model{
 
         $sec_todey = time() - strtotime('today'); //сколько секунд прошло с начала дня
         //за сколько дней показывать по-умолчанию (позавчера/вчера/сегодня)
-        if (!$days_ago) $days_ago = time() - (86400 * self::STAT_DEFAUL) - $sec_todey;
+//        if (!$days_ago) $days_ago = time() - (86400 * self::STAT_DEFAUL) - $sec_todey;
 
         $date_unix = $days_ago = time() - (86400 * self::STAT_DEFAUL) - $sec_todey;
         //В формат 2017-08-05 00:00:00 как в БД
         $days_ago = date("Y-m-d H:i:s",$date_unix);
-
+//        dd($days_ago);
 
         //Выбор диапазона между двумя датами
         if(in_array( 'created_at',$condition)) {
@@ -87,6 +89,7 @@ class KslStatistic extends Model{
                 ->get();
 
         } else {
+//            dd(self::STAT_DEFAUL);
             $count_ip = $this
                 ->where('black_list_ip', '<', 1)
                 ->where('created_at', '>', $days_ago)
@@ -119,34 +122,43 @@ class KslStatistic extends Model{
 
 
     //Добавить в черн список
-    public function set_black_list($ip, $comment){
+    public function set_black_list($ip, $comment=''){
         $verify_black_list = $this->where('ip', $ip)->get();
-        //Если такой IP уже есть
-        if($verify_black_list){
+
+        //Если такой IP уже есть (коллекция не пуста)
+        if(!$verify_black_list->isEmpty()){
             foreach ($verify_black_list as $str){
                 $str->black_list_ip = 1;
                 $str->comment = $comment;
-                $str->save();
+                $res = $str->save();
             }
         } else {
             $this->ip = $ip;
+            $this->str_url = '';
             $this->black_list_ip = 1;
             $this->comment = $comment;
-            $this->save();
+            $res = $this->save();
         }
+
+        if($res) session()->flash('status', 'IP добавлен в черный список');
+        else session()->flash('error', 'Ошибка добавления IP в черный список');
     }
 
 
 
     //Удаление из черного списка
     public function remove_black_list($ip){
+        $res = null;
 
         $verify_black_list = $this->where('ip', $ip)->get();
         foreach ($verify_black_list as $str){
             $str->black_list_ip = 0;
             $str->comment = null;
-            $str->save();
+            $res = $str->save();
         }
+
+        if($res) session()->flash('status', 'IP удален из черного списка');
+        else session()->flash('error', 'Ошибка удаления IP из черного списка. IP не найден.');
     }
 
 
