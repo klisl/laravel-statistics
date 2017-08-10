@@ -3,7 +3,7 @@ laravel-widgets
 [![Laravel 5.4](https://img.shields.io/badge/Laravel-5.4-orange.svg?style=flat-square)](http://laravel.com)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://tldrlegal.com/license/mit-license)
 
-Пакет для создания блока комментариев в Laravel-5.
+Пакет для вывода статистики посетителей по их IP адресам для сайта/приложения на Laravel-5.
 
 Особенности и преимущества данного пакета:
 
@@ -18,35 +18,31 @@ laravel-widgets
   
 Установка
 ------------------
-Установка пакета с помощью Composer.
+* Установка пакета с помощью Composer.
 
 ```
-composer require klisl/laravel-comments
+composer require klisl/laravel-statistics
 ```
 
-По завершении этой операции, добавьте в файл `config/app.php` вашего проекта в конец массива `providers` :
+* По завершении этой операции, добавьте в файл `config/app.php` вашего проекта в конец массива `providers` строку:
 
 ```php
-Klisl\Comments\CommentsServiceProvider::class,
+Klisl\Statistics\StatisticsServiceProvider::class,
 ```
 
-После этого выполните в консоли команду публикации нужных ресурсов:
+* После этого выполните в консоли команду публикации нужных ресурсов:
 ```
-php artisan vendor:publish --provider="Klisl\Comments\CommentsServiceProvider"
+php artisan vendor:publish --provider=" Klisl\Statistics\StatisticsServiceProvider"
 ```
 
-Проверить, возможно изменить настройки пакета в файле config\comments.php.
-
-Выполнить миграции для создания нужных таблиц (консоль):
+* Выполнить миграцию для создания нужной таблицы в базе данных (консоль):
 ```
 php artisan migrate
 ```
 
-При желании, можно заполнить таблицу комментариев данными для тестирования  (консоль):
-```
-composer dump-autoload
-php artisan db:seed --class=TestCommentsSeeder
-```
+* Указать названия маршрутов по которым должна собираться статистика в файле config\statistics.php
+Если маршрут обрабатывает разные типы запросов, статистика будет собирается, только для типа GET.
+
 
 
 Использование

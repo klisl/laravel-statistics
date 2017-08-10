@@ -3,11 +3,17 @@
 <head>
 	<meta charset="utf-8">
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.css" rel="stylesheet">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
-	{{--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>--}}
-	{{--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">--}}
+	{{--<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.css" rel="stylesheet">--}}
+	{{--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>--}}
+	{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>--}}
+
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    {{--<link rel="stylesheet" href="/resources/demos/style.css">--}}
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
 
     <link href="{{asset('ksl-stat/css/style_ip.css')}}" rel="stylesheet">
 
@@ -30,11 +36,7 @@
         @endif
 
 
-
-        @include('Views::default', [
-            'count_ip'=> $count_ip,
-            'stat_ip' => $stat_ip,
-        ])
+        @include('Views::table')
 
 
 		{!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
@@ -81,7 +83,7 @@
 
         <div class="form-group">
             {{ Form::label('IP', null, ['class' => 'control-label']) }}
-            {!! Form::text('ip', '127.0.0.1') !!}
+            {!! Form::text('ip', null, ['placeholder' => '127.0.0.1']) !!}
         </div>
 
         {{ Form::hidden('search_ip', true)}}
@@ -93,7 +95,6 @@
 
         <h3>Черный список IP</h3>
         <p>Под черным списком понимаются IP, по которым не нужна статистика, например IP администратора сайта.
-           Поисковые боты отфильтровываются специальной функцией и попасть в общую статистику не должны.
         <br>По данным IP статистика не будет сохраняться с момента добавления в черный список.</p>
 
         <table>
@@ -109,7 +110,7 @@
             @endforeach
 
             @if(count($black_list)==0)
-                echo "<td>Черный список пуст.</td>";
+                <td>Черный список пуст.</td>
             @endif
 
             </tr>
@@ -122,13 +123,14 @@
         {!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
         <div class="form-group">
             {{ Form::label('IP', null, ['class' => 'control-label']) }}
-            {!! Form::text('ip', '127.0.0.1') !!}
+            {!! Form::text('ip', null, ['placeholder' => '127.0.0.1']) !!}
         </div>
         <div class="form-group">
             {{ Form::label('Комментарий', null, ['class' => 'control-label']) }}
             {!! Form::text('comment') !!}
         </div>
 
+        {{ Form::hidden('add_black_list', true)}}
         {!! Form::button('Добавить в черный список',['type'=>'submit']) !!}
         {!! Form::close() !!}
         <br>
@@ -139,7 +141,7 @@
         {!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
         <div class="form-group">
             {{ Form::label('IP', null, ['class' => 'control-label']) }}
-            {!! Form::text('ip', '127.0.0.1') !!}
+            {!! Form::text('ip', null, ['placeholder' => '127.0.0.1']) !!}
         </div>
 
         {{ Form::hidden('del_black_list', true)}}
@@ -162,14 +164,49 @@
 
         <script type="text/javascript">
 
+            $.datepicker.regional['ru'] = {
+                closeText: 'Закрыть',
+                prevText: '&#x3c;Пред',
+                nextText: 'След&#x3e;',
+                currentText: 'Сегодня',
+                monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь',
+                    'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+                monthNamesShort: ['Янв','Фев','Мар','Апр','Май','Июн',
+                    'Июл','Авг','Сен','Окт','Ноя','Дек'],
+                dayNames: ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'],
+                dayNamesShort: ['вск','пнд','втр','срд','чтв','птн','сбт'],
+                dayNamesMin: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+                dateFormat: 'dd.mm.yy',
+                firstDay: 1,
+                isRTL: false
+            };
+            $.datepicker.setDefaults( $.datepicker.regional[ "ru" ] );
+
+
             $('.date_ip').datepicker({
 
-                format: 'yyyy-mm-dd'
-
+                dateFormat: "dd-mm-yy", //формат даты
+                minDate: "-1y", // выбор не более чем за последний год
+                maxDate: "+0d" // максимальная дата выбора - сегодняшняя
             });
 
         </script>
 
-    </div>>
+        <div id="sub-footer">
+            <div class="container">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="copyright">
+                            <p class="text-center"><a href="http://klisl.com/" target="_blank"><b>&copy; KSL</b></a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
 </body>
 </html>

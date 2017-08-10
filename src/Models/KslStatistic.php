@@ -19,59 +19,40 @@ class KslStatistic extends Model{
     public $del_old;
     public $reset;
 
-//    public static function tableName()
-//    {
-//        return '{{%ksl_ip_count}}';
-//    }
-//
-//    public function rules()
-//    {
-//        return [
-//            [['ip'], 'required'],
-//            [['str_url'], 'url'],
-//            [['date_ip', 'start_time', 'stop_time', 'add_black_list', 'del_black_list', 'del_old', 'reset'], 'safe'],
-//            [['black_list_ip'], 'boolean'],
-//            [['comment'], 'string'],
-//        ];
-//    }
+
 
     //проверка наличия IP в черном списке (которые не надо выводить и сохранять в БД)
     //если есть хоть одна строка, то вернет true
-//    public function inspection_black_list($ip){
-//
-//        $check = $this->
-//        where('ip', $ip)->
-//        where('black_list_ip', 1)->
-//        get();
-//        if ($check) return true;
-//    }
+    public function inspection_black_list($ip){
 
-//    public function setCount($ip, $str_url, $black_list_ip = 0){
-//        $this->ip = $ip;
-//        $this->str_url = $str_url;
-//        $this->date_ip = time();
-//        $this->black_list_ip = $black_list_ip;
-//        $this->save();
-//    }
+        $check = $this
+            ->where('ip', $ip)
+            ->where('black_list_ip', 1)
+            ->get();
+
+        if (!$check->isEmpty()) return true;
+    }
+
+    public function setCount($ip, $str_url, $black_list_ip = 0){
+        $this->ip = $ip;
+        $this->str_url = $str_url;
+        $this->black_list_ip = $black_list_ip;
+        $this->save();
+    }
+
+
 
     public function getCount($condition = null, $days_ago = null){
 
-//        dump($condition);
-
         $sec_todey = time() - strtotime('today'); //сколько секунд прошло с начала дня
         //за сколько дней показывать по-умолчанию (позавчера/вчера/сегодня)
-//        if (!$days_ago) $days_ago = time() - (86400 * self::STAT_DEFAUL) - $sec_todey;
 
         $date_unix = $days_ago = time() - (86400 * self::STAT_DEFAUL) - $sec_todey;
         //В формат 2017-08-05 00:00:00 как в БД
         $days_ago = date("Y-m-d H:i:s",$date_unix);
-//        dd($days_ago);
 
         //Выбор диапазона между двумя датами
         if(in_array( 'created_at',$condition)) {
-//            dump($condition);
-//            dd(date("Y-m-d H:i:s",$condition[1]));
-//            dump($condition);
             $count_ip = $this
                 ->where('black_list_ip', '<', 1)
                 ->whereBetween($condition[0], [date("Y-m-d H:i:s",$condition[1]), date("Y-m-d H:i:s",$condition[2])])
@@ -89,7 +70,6 @@ class KslStatistic extends Model{
                 ->get();
 
         } else {
-//            dd(self::STAT_DEFAUL);
             $count_ip = $this
                 ->where('black_list_ip', '<', 1)
                 ->where('created_at', '>', $days_ago)
@@ -140,7 +120,7 @@ class KslStatistic extends Model{
             $res = $this->save();
         }
 
-        if($res) session()->flash('status', 'IP добавлен в черный список');
+        if($res) session()->flash('status', 'IP '.$ip.' добавлен в черный список');
         else session()->flash('error', 'Ошибка добавления IP в черный список');
     }
 
@@ -157,8 +137,8 @@ class KslStatistic extends Model{
             $res = $str->save();
         }
 
-        if($res) session()->flash('status', 'IP удален из черного списка');
-        else session()->flash('error', 'Ошибка удаления IP из черного списка. IP не найден.');
+        if($res) session()->flash('status', 'IP '.$ip.' удален из черного списка');
+        else session()->flash('error', 'Ошибка удаления IP из черного списка.');
     }
 
 
@@ -178,4 +158,20 @@ class KslStatistic extends Model{
         session()->flash('status', 'Удалено '. count($old) . ' строк.');
 
     }
+
+    /*
+     * Проверка был ли такой IP в течении текущих суток (0-24)
+     * Если да, то не добавляем в общий счетчик посетителей за день
+     */
+    public function find_ip_by_day($ip, $date){
+
+        $time = $date->format('Y-m-d 00:00:00'); //0:00 полученного дня
+        $time_now = $date->subSecond()->format('Y-m-d H:i:s'); //текущее время и день минус 1 секунда
+
+        $res = $this->where('ip', $ip)
+            ->whereBetween('created_at', [$time, $time_now])
+            ->get();
+        return $res;
+    }
+
 }
