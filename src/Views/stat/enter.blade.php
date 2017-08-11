@@ -20,15 +20,14 @@
         <div class="hentry group">
 
             <h3>Статистика посещений</h3>
-            {!! Form::open(['url'=>route('enter'), 'class'=>'form-horizontal','method' => 'POST']) !!}
+            {!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
 
             <div class="form-group">
                 {{ Form::label('Ввод пароля', null, ['class' => 'control-label']) }}
                 {!! Form::text('password') !!}
             </div>
 
-
-
+            {{ Form::hidden('enter', true)}}
             {!! Form::button('Войти',['class'=>'button-reset','type'=>'submit']) !!}
             {!! Form::close() !!}
 

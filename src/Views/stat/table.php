@@ -34,7 +34,10 @@
     </thead>
     <tbody>
 
-	<?php foreach ($count_ip as $key=>$value){
+	<?php foreach ($count_ip as $key => $value){
+
+
+
 
 			//кол-во посетителей по дням (вывод последнего дня после цикла)
 			if($date != $value->created_at->format('d.m.Y')) {
@@ -52,6 +55,7 @@
 				$num_ip = $value->ip; //сохраняем текущий IP
 
                 if($now_date !=$value->created_at->format('Y-m-d')){
+
                     $now_date = $value->created_at->format('Y-m-d'); //сохраняем текущую дату
                     $show_new_date = true;
                 } else $show_new_date = false;
@@ -80,19 +84,27 @@
 			}
 
 			echo "<tr ";
-			if ($transition == 1 && $old == 0 ) {
 
-			    if($show_new_date){
+
+			if ($transition == 1 ) {
+
+                if ($show_new_date && !$old) {
                     echo "class='tr_first red'><td colspan='4'>{$value->created_at->format('d.m.Y')}</td></tr>";
-                    echo "<tr class='tr_first'><td colspan='4'>Новый посетитель</td></tr>";
-                } else {
-                    echo "class='tr_first'><td colspan='4'>Новый посетитель</td></tr>";
-                }
+                    echo "<tr class='tr_first'><td colspan='4'>НОВЫЙ ПОСЕТИТЕЛЬ</td></tr>";
 
-		    }
-		    else if($transition == 1 && $old != 0){
-                echo "class='tr_first'><td colspan='4'>был сегодня</td></tr>";
+                }
+                else if ($show_new_date && $old) {
+                    echo "class='tr_first red'><td colspan='4'>{$value->created_at->format('d.m.Y')}</td></tr>";
+                    echo "<tr class='tr_first'><td colspan='4'>был уже</td></tr>";
+                }
+                elseif ($old) {
+                    echo "class='tr_first'><td colspan='4'>был уже</td></tr>";
+
+                } else {
+                    echo "class='tr_first'><td colspan='4'>НОВЫЙ ПОСЕТИТЕЛЬ</td></tr>";
+                }
             }
+
 		    else {
 			   echo ">";
 		    }

@@ -14,6 +14,9 @@ class StatisticsServiceProvider extends ServiceProvider
 	
     public function boot()
     {
+
+        Route::post('/statistics',['uses' =>'StatController@forms'])->name('forms');
+
         /*
          * Используется стандартное событие, срабатывающее после загрузки всех маршрутов
          * для получения названия текущего маршрута

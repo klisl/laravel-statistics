@@ -4,29 +4,39 @@
 namespace Klisl\Statistics\Controllers;
 
 
+use App\Http\Controllers\Controller;
 use Klisl\Statistics\Models\KslStatistic;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 
 
-class StatController
+
+class StatController extends Controller
 {
+
 
     public function index($condition = [], $days_ago = null, $stat_ip = false)
     {
 
-        //Проверка доступа по вводу пароля
-        $session_stat = session('ksl-statistics');
-        $enter = Input::get('ksl-statistics');
+        //Если доступ разрешен только аутентифицированным пользователям
+        $auth_config = config('statistics.authentication');
+        $user = \Auth::user();
 
-
-        dd($enter);
-        if(!$session_stat){
-            return view('Views::enter',[
-
-            ]);
+        if($auth_config && !$user){
+            $auth_route = config('statistics.auth_route');
+            return redirect()->route($auth_route);
         }
-//        dd($session_stat);
+
+
+        //Проверка доступа по вводу пароля
+        $password_config = config('statistics.password');
+
+        if($password_config){
+            $session_stat = session('ksl-statistics');
+            if(!$session_stat || $session_stat != $password_config){
+                return view('Views::enter');
+            }
+        }
+
 
 
 		$count_model = new KslStatistic(); //модель
@@ -57,13 +67,39 @@ class StatController
 
     public function forms(Request $request){
 
+        $count_model = $request->except('_token');
+
+
+        /*
+         * Форма входа на страницу статистики
+         */
+        if(isset($count_model['enter'])) {
+            $password_config = config('statistics.password');
+            $password_enter = $request->input('password');
+
+            if ($password_config == $password_enter) {
+
+                session(['ksl-statistics' => true]);
+
+                return redirect()->route('statistics');
+
+            } else {
+                session()->flash('error', 'Неверный пароль');
+                return view('Views::enter');
+            }
+        }
+
+
+
+        /*
+         * Формы выбора параметров вывода статистики
+         */
         $condition = [];
 		$days_ago = null;
         $stat_ip = false;
 
         $model = new KslStatistic();
 
-        $count_model = $request->except('_token');
 
         //Сброс фильтров
         if(isset($count_model['reset'])){
@@ -75,7 +111,6 @@ class StatController
             $time_max = $time + 86400;
             $condition = ["created_at", $time , $time_max];
         }
-
 
 
         //За период
@@ -155,9 +190,11 @@ class StatController
         $password_enter = $request->input('password');
 //        dd($password_enter);
         if($password_config == $password_enter){
-//            session(['ksl-statistics' => true]);
-            $cookie = cookie('ksl-statistics', 'ksl', 12*60);
-            return redirect()->route('statistics')->withCookie($cookie);;
+
+            session(['ksl-statistics' => $password_config]);
+
+            return redirect()->route('statistics');
+
         } else {
             session()->flash('error', 'Неверный пароль');
             return view('Views::enter');

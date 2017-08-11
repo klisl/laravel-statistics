@@ -10,8 +10,6 @@ class KslStatistic extends Model{
 
     protected $guarded = [];
 
-    const STAT_DEFAUL = 3; //выводить за 3 дня по-умолчанию
-
     public $start_time;
     public $stop_time;
     public $add_black_list;
@@ -45,9 +43,11 @@ class KslStatistic extends Model{
     public function getCount($condition = null, $days_ago = null){
 
         $sec_todey = time() - strtotime('today'); //сколько секунд прошло с начала дня
-        //за сколько дней показывать по-умолчанию (позавчера/вчера/сегодня)
 
-        $date_unix = $days_ago = time() - (86400 * self::STAT_DEFAUL) - $sec_todey;
+        //за сколько дней показывать по-умолчанию
+        $days_show_stat = config('statistics.days_default') -1 ;
+
+        $date_unix = $days_ago = time() - (86400 * $days_show_stat) - $sec_todey;
         //В формат 2017-08-05 00:00:00 как в БД
         $days_ago = date("Y-m-d H:i:s",$date_unix);
 
@@ -56,7 +56,7 @@ class KslStatistic extends Model{
             $count_ip = $this
                 ->where('black_list_ip', '<', 1)
                 ->whereBetween($condition[0], [date("Y-m-d H:i:s",$condition[1]), date("Y-m-d H:i:s",$condition[2])])
-                ->orderBy('created_at')
+                ->orderBy('created_at', 'desc')
                 ->get();
 
 
@@ -66,17 +66,18 @@ class KslStatistic extends Model{
                 ->where('black_list_ip', '<', 1)
                 ->where('created_at', '>', $days_ago)
                 ->where('ip', $condition)
-                ->orderBy('created_at')
+                ->orderBy('created_at', 'desc')
                 ->get();
 
         } else {
             $count_ip = $this
                 ->where('black_list_ip', '<', 1)
                 ->where('created_at', '>', $days_ago)
-                ->orderBy('created_at')
+                ->orderBy('created_at', 'desc')
                 ->get();
 
         }
+//        dd($count_ip);
         return $count_ip;
     }
 
