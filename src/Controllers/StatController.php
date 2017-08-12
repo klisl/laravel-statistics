@@ -1,6 +1,5 @@
 <?php
 
-//namespace App\Http\Controllers;
 namespace Klisl\Statistics\Controllers;
 
 
@@ -73,7 +72,6 @@ class StatController extends Controller
     public function forms(Request $request){
 
         $count_model = $request->except('_token');
-
 
         /*
          * Форма входа на страницу статистики
@@ -157,7 +155,6 @@ class StatController extends Controller
                 session()->flash('error', 'Укажите IP для добавления в черный список');
             } else {
                 $ip = $request->only('ip');
-//                dd($ip);
                 $rules = [
                     'ip'=>'ip',
                 ];
@@ -193,7 +190,7 @@ class StatController extends Controller
     public function enter(Request $request){
         $password_config = config('statistics.password');
         $password_enter = $request->input('password');
-//        dd($password_enter);
+
         if($password_config == $password_enter){
 
             session(['ksl-statistics' => $password_config]);

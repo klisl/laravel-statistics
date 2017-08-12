@@ -37,88 +37,87 @@
 	<?php foreach ($count_ip as $key => $value){
 
 
+        //кол-во посетителей по дням (вывод последнего дня после цикла)
+        if($date != $value->created_at->format('d.m.Y')) {
+            echo $date . ' - '. $count_day . '<br>';
+            $date = $value->created_at->format('d.m.Y');
+            $count_day = 0;
+        }
+
+        if ($stat_ip) $count_day++; //для фильтра по определенному IP
 
 
-			//кол-во посетителей по дням (вывод последнего дня после цикла)
-			if($date != $value->created_at->format('d.m.Y')) {
-				echo $date . ' - '. $count_day . '<br>';
-				$date = $value->created_at->format('d.m.Y');
-				$count_day = 0;
-			}
+        //Если сменился IP или дата, то включаем счетчики
+        if (($num_ip != $value->ip) || ($now_date !=$value->created_at->format('Y-m-d'))){
 
-			if ($stat_ip) $count_day++; //для фильтра по определенному IP
+            $num_ip = $value->ip; //сохраняем текущий IP
 
+            if($now_date !=$value->created_at->format('Y-m-d')){
 
-			//Если сменился IP или дата, то включаем счетчики
-			if (($num_ip != $value->ip) || ($now_date !=$value->created_at->format('Y-m-d'))){
-
-				$num_ip = $value->ip; //сохраняем текущий IP
-
-                if($now_date !=$value->created_at->format('Y-m-d')){
-
-                    $now_date = $value->created_at->format('Y-m-d'); //сохраняем текущую дату
-                    $show_new_date = true;
-                } else $show_new_date = false;
+                $now_date = $value->created_at->format('Y-m-d'); //сохраняем текущую дату
+                $show_new_date = true;
+            } else $show_new_date = false;
 
 
-				$transition = 1;
+            $transition = 1;
 
-				/*
-				 * тут проверка был ли такой IP в течении текущих суток (0-24)
-				 * Если да, то не добавляем в общий счетчик посетителей за день
-				 */
-                $find = $value->find_ip_by_day($value->ip, $value->created_at);
+            /*
+             * тут проверка был ли такой IP в течении текущих суток (0-24)
+             * Если да, то не добавляем в общий счетчик посетителей за день
+             */
+            $find = $value->find_ip_by_day($value->ip, $value->created_at);
 
-                //Если такого IP еще не было в этот день
-                if($find->isEmpty()){
-                    $count++;
-                    if (!$stat_ip) $count_day++; //для фильтра по определенному IP
-                    $old = 0;
-                } else {
-                    $old = $find->count();
-                }
-
-
-			} else {
-				$transition++;
-			}
-
-			echo "<tr ";
-
-
-			if ($transition == 1 ) {
-
-                if ($show_new_date && !$old) {
-                    echo "class='tr_first red'><td colspan='4'>{$value->created_at->format('d.m.Y')}</td></tr>";
-                    echo "<tr class='tr_first'><td colspan='4'>НОВЫЙ ПОСЕТИТЕЛЬ</td></tr>";
-
-                }
-                else if ($show_new_date && $old) {
-                    echo "class='tr_first red'><td colspan='4'>{$value->created_at->format('d.m.Y')}</td></tr>";
-                    echo "<tr class='tr_first'><td colspan='4'>уже был</td></tr>";
-                }
-                elseif ($old) {
-                    echo "class='tr_first'><td colspan='4'>уже был</td></tr>";
-
-                } else {
-                    echo "class='tr_first'><td colspan='4'>НОВЫЙ ПОСЕТИТЕЛЬ</td></tr>";
-                }
+            //Если такого IP еще не было в этот день
+            if($find->isEmpty()){
+                $count++;
+                if (!$stat_ip) $count_day++; //для фильтра по определенному IP
+                $old = 0;
+            } else {
+                $old = $find->count();
             }
 
-		    else {
-			   echo ">";
-		    }
-			echo "<td>$transition</td>
-				<td><a href='http://speed-tester.info/ip_location.php?ip=".$value->ip."' target=\"_blank\">".$value->ip."</a></td>  	
-				<td><a href='".$value->str_url."' target=\"_blank\">".$value->str_url."</a></td>                     
-				<td>".$value->created_at->format('d.m.Y H:i:s')."</td></tr>";
-			  
-	}
-            //вывод кол-ва посетителей за последнее число
-            if(isset($value)){
-                $date = $value->created_at->format('d.m.Y');
-                if($date) echo $date . ' - '. $count_day . '<br>';
+
+        } else {
+            $transition++;
+        }
+
+        echo "<tr ";
+
+
+        if ($transition == 1 ) {
+
+            if ($show_new_date && !$old) {
+                echo "class='tr_first red'><td colspan='4'>{$value->created_at->format('d.m.Y')}</td></tr>";
+                echo "<tr class='tr_first'><td colspan='4'>НОВЫЙ ПОСЕТИТЕЛЬ</td></tr>";
+
             }
+            else if ($show_new_date && $old) {
+                echo "class='tr_first red'><td colspan='4'>{$value->created_at->format('d.m.Y')}</td></tr>";
+                echo "<tr class='tr_first'><td colspan='4'>уже был</td></tr>";
+            }
+            elseif ($old) {
+                echo "class='tr_first'><td colspan='4'>уже был</td></tr>";
+
+            } else {
+                echo "class='tr_first'><td colspan='4'>НОВЫЙ ПОСЕТИТЕЛЬ</td></tr>";
+            }
+        }
+
+        else {
+           echo ">";
+        }
+        echo "<td>$transition</td>
+            <td><a href='http://speed-tester.info/ip_location.php?ip=".$value->ip."' target=\"_blank\">".$value->ip."</a></td>  	
+            <td><a href='".$value->str_url."' target=\"_blank\">".$value->str_url."</a></td>                     
+            <td>".$value->created_at->format('d.m.Y H:i:s')."</td></tr>";
+
+    }
+
+        //вывод кол-ва посетителей за последнее число
+        if(isset($value)){
+            $date = $value->created_at->format('d.m.Y');
+            if($date) echo $date . ' - '. $count_day . '<br>';
+        }
 	?>
 
         <p>Всего посетителей за период - <?=$count?></p>

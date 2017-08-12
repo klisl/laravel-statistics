@@ -37,7 +37,7 @@ Klisl\Statistics\StatisticsServiceProvider::class,
 
 * После этого выполните в консоли команду публикации нужных ресурсов:
 ```
-php artisan vendor:publish --provider=" Klisl\Statistics\StatisticsServiceProvider"
+php artisan vendor:publish --provider="Klisl\Statistics\StatisticsServiceProvider"
 ```
 
 * Выполнить миграцию для создания нужной таблицы в базе данных (консоль):
@@ -45,7 +45,7 @@ php artisan vendor:publish --provider=" Klisl\Statistics\StatisticsServiceProvid
 php artisan migrate
 ```
 
-* Указать названия маршрутов по которым должна собираться статистика в файле config\statistics.php
+* Указать названия маршрутов (обычно из файла routes\web.php) по которым должна собираться статистика в файле config\statistics.php
 Если маршрут обрабатывает разные типы запросов, статистика будет собирается, только для типа GET.
 
 
@@ -76,9 +76,15 @@ Route::get('/contact',['uses' =>'ContactController@show'])->name('contact');
 
 Откроется форма для входа на страницу с вводом пароля или страница аутентификации (в зависимости от настроек).
 После ввода правильных данных, откроется сама страница статистики с формами для фильтрации.
+
 При тестировании на локальном компьютере, в статистику попадет IP 127.0.0.1. 
 После начала использования пакета на хостинге, необходимо будет добавить свой IP в черный список, чтобы он не выводился в статистике.
 
+При необходимости (если часы посещения будут не совпадать) установите нужное значение временной зоны в файле
+config\app.php, например:
+```
+'timezone' => 'Europe/Kiev',
+```
 
 
 ![enter image description here](http://klisl.com/frontend/web/images/external/lar_stat3.jpg)

@@ -59,7 +59,6 @@ class KslStatistic extends Model{
                 ->orderBy('created_at')
                 ->get();
 
-
         } elseif($condition){
 
             $count_ip = $this
@@ -177,28 +176,31 @@ class KslStatistic extends Model{
 
 
     /*
-    * Преобразуем коллекцию к виду где элменты с более поздней датой идут в начале
+    * Преобразуем коллекцию к виду, где элементы с более поздней датой идут в начале
     * при этом часы/минуты/секунды в расчет не берутся
     * Используется для вывода в начале таблицы текущей даты и дальше по убыванию
     */
     public function reverse($count_ip){
 
-        $array = [];
-        $count = 0;
-        $first_day = $count_ip->first()->created_at->format('Y-m-d');
+        if(!$count_ip->isEmpty()){
+            $array = [];
+            $count = 0;
+            $first_day = $count_ip->first()->created_at->format('Y-m-d');
 
-        foreach ($count_ip as $item) {
-            $one_day = $item->created_at->format('Y-m-d');
+            foreach ($count_ip as $item) {
+                $one_day = $item->created_at->format('Y-m-d');
 
-            if ($first_day != $one_day) {
-                $count++;
-                $first_day = $one_day;
-                $array[$count][] = $item;
-            } else {
-                $array[$count][] = $item;
-            }
-        };
-        return collect($array)->reverse()->collapse();
+                if ($first_day != $one_day) {
+                    $count++;
+                    $first_day = $one_day;
+                    $array[$count][] = $item;
+                } else {
+                    $array[$count][] = $item;
+                }
+            };
+            return collect($array)->reverse()->collapse();
+        }
+        return $count_ip;
     }
 
 }
