@@ -95,10 +95,10 @@
                 }
                 else if ($show_new_date && $old) {
                     echo "class='tr_first red'><td colspan='4'>{$value->created_at->format('d.m.Y')}</td></tr>";
-                    echo "<tr class='tr_first'><td colspan='4'>был уже</td></tr>";
+                    echo "<tr class='tr_first'><td colspan='4'>уже был</td></tr>";
                 }
                 elseif ($old) {
-                    echo "class='tr_first'><td colspan='4'>был уже</td></tr>";
+                    echo "class='tr_first'><td colspan='4'>уже был</td></tr>";
 
                 } else {
                     echo "class='tr_first'><td colspan='4'>НОВЫЙ ПОСЕТИТЕЛЬ</td></tr>";

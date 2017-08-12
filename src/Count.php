@@ -13,7 +13,7 @@ use Klisl\Statistics\Models\KslStatistic;
     public static function init(){
 
         $ip = \Request::ip(); //получаем IP текущего посетителя
-        if($ip == '127.0.0.1') return;
+//        if($ip == '127.0.0.1') return;
 
         $count_model = new KslStatistic(); //модель
 

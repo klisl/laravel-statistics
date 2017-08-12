@@ -21,7 +21,7 @@ class StatController extends Controller
         $auth_config = config('statistics.authentication');
         $user = \Auth::user();
 
-        if($auth_config && !$user){
+        if ($auth_config && !$user) {
             $auth_route = config('statistics.auth_route');
             return redirect()->route($auth_route);
         }
@@ -30,19 +30,24 @@ class StatController extends Controller
         //Проверка доступа по вводу пароля
         $password_config = config('statistics.password');
 
-        if($password_config){
+        if ($password_config) {
             $session_stat = session('ksl-statistics');
-            if(!$session_stat || $session_stat != $password_config){
+
+            if (!$session_stat || ($session_stat !== $password_config)) {
                 return view('Views::enter');
             }
         }
 
 
+        $count_model = new KslStatistic(); //модель
 
-		$count_model = new KslStatistic(); //модель
+        //Получение списка статистики
+        $count_ip = $count_model->getCount($condition, $days_ago);
 
-		//Получение списка статистики
-		$count_ip = $count_model->getCount($condition, $days_ago);
+        //Преобразуем коллекцию к виду где более поздняя дата идет в начале
+        $count_ip = $count_model->reverse($count_ip);
+
+
 
 		/*
 		 * Устанавливаем значение полей по-умолчанию для вывода в полях формы
@@ -79,7 +84,7 @@ class StatController extends Controller
 
             if ($password_config == $password_enter) {
 
-                session(['ksl-statistics' => true]);
+                session(['ksl-statistics' => $password_config]);
 
                 return redirect()->route('statistics');
 

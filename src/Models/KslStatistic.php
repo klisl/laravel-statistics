@@ -56,7 +56,7 @@ class KslStatistic extends Model{
             $count_ip = $this
                 ->where('black_list_ip', '<', 1)
                 ->whereBetween($condition[0], [date("Y-m-d H:i:s",$condition[1]), date("Y-m-d H:i:s",$condition[2])])
-                ->orderBy('created_at', 'desc')
+                ->orderBy('created_at')
                 ->get();
 
 
@@ -66,14 +66,14 @@ class KslStatistic extends Model{
                 ->where('black_list_ip', '<', 1)
                 ->where('created_at', '>', $days_ago)
                 ->where('ip', $condition)
-                ->orderBy('created_at', 'desc')
+                ->orderBy('created_at')
                 ->get();
 
         } else {
             $count_ip = $this
                 ->where('black_list_ip', '<', 1)
                 ->where('created_at', '>', $days_ago)
-                ->orderBy('created_at', 'desc')
+                ->orderBy('created_at')
                 ->get();
 
         }
@@ -173,6 +173,32 @@ class KslStatistic extends Model{
             ->whereBetween('created_at', [$time, $time_now])
             ->get();
         return $res;
+    }
+
+
+    /*
+    * Преобразуем коллекцию к виду где элменты с более поздней датой идут в начале
+    * при этом часы/минуты/секунды в расчет не берутся
+    * Используется для вывода в начале таблицы текущей даты и дальше по убыванию
+    */
+    public function reverse($count_ip){
+
+        $array = [];
+        $count = 0;
+        $first_day = $count_ip->first()->created_at->format('Y-m-d');
+
+        foreach ($count_ip as $item) {
+            $one_day = $item->created_at->format('Y-m-d');
+
+            if ($first_day != $one_day) {
+                $count++;
+                $first_day = $one_day;
+                $array[$count][] = $item;
+            } else {
+                $array[$count][] = $item;
+            }
+        };
+        return collect($array)->reverse()->collapse();
     }
 
 }
