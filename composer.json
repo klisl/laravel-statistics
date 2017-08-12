@@ -1,6 +1,6 @@
 {
     "name": "klisl/laravel-statistics",
-    "description": "Package for getting statistics by IP for your site",
+    "description": "Package for getting statistics by IP for your site in Laravel-5",
 	"type": "library",
 	"keywords": [
         "laravel",
