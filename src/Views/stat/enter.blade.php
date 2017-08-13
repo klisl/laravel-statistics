@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+	<meta name="robots" content="noindex,nofollow" />
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{asset('ksl-stat/css/style_ip.css')}}" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>

@@ -55,7 +55,7 @@ class StatisticsServiceProvider extends ServiceProvider
         /*
          * Регистрируется (добавляем) каталог для хранения шаблонов
          */
-        $this->loadViewsFrom(__DIR__ . '/views/stat', 'Views');
+        $this->loadViewsFrom(__DIR__ . '/Views/stat', 'Views');
 
 
 //		Schema::defaultStringLength(191);
