@@ -22,6 +22,13 @@
         "php": ">=5.4.0",
         "laravelcollective/html": "^5.4.0"
     },
+	"extra": {
+      "laravel": {
+        "providers": [
+          "Klisl\\Statistics\\StatisticsServiceProvider"
+        ]
+      }
+    },
     "autoload": {
         "psr-4": {
 			"Klisl\\Statistics\\": "src"
