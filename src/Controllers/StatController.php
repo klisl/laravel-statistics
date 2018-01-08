@@ -8,11 +8,21 @@ use Klisl\Statistics\Models\KslStatistic;
 use Illuminate\Http\Request;
 
 
-
+/**
+ * Class StatController
+ * Формирует страницу статистики
+ *
+ * @package Klisl\Statistics\Controllers
+ */
 class StatController extends Controller
 {
 
-
+    /**
+     * @param array $condition
+     * @param integer|null $days_ago
+     * @param bool $stat_ip
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function index($condition = [], $days_ago = null, $stat_ip = false)
     {
 
@@ -66,9 +76,10 @@ class StatController extends Controller
     }
 
 
-
-
-
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function forms(Request $request){
 
         $count_model = $request->except('_token');
@@ -91,7 +102,6 @@ class StatController extends Controller
                 return view('Views::enter');
             }
         }
-
 
 
         /*
@@ -186,7 +196,10 @@ class StatController extends Controller
         return $this->index($condition, $days_ago, $stat_ip);
     }
 
-
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function enter(Request $request){
         $password_config = config('statistics.password');
         $password_enter = $request->input('password');

@@ -1,28 +1,35 @@
 <?php
-/*
- * Сохраняет в БД IP посетителя
- */
+
 namespace Klisl\Statistics;
 
 use Klisl\Statistics\Models\KslStatistic;
 
 
-	class Count
+/**
+ * Class Count
+ * Сохраняет в БД IP посетителя
+ * @package Klisl\Statistics
+ */
+class Count
 {
 
+    /**
+     * Получение IP текущего посетителя, проверка на бота, поиск в черном списке
+     * Сохранение в БД при прохождении фильтров
+     *
+     * @return void
+     */
     public static function init(){
 
-        $ip = \Request::ip(); //получаем IP текущего посетителя
-//        if($ip == '127.0.0.1') return;
+        $ip = \Request::ip();
 
-        $count_model = new KslStatistic(); //модель
+        $count_model = new KslStatistic();
 
         $str_url = \URL::full(); //URL текущей страницы c параметрами
 
 
 		//Проверка на бота
 		$bot_name = self::isBot();
-		//$bot_name = 'rambler'; //для тестирования
 
 		if(!$bot_name){
 			//Проверка в черном списке
@@ -35,7 +42,12 @@ use Klisl\Statistics\Models\KslStatistic;
 	}
 
 
-    //Проверяет, является ли посетитель роботом поисковой системы.
+    /**
+     * Проверяет, является ли посетитель роботом поисковой системы.
+     *
+     * @param string $botname
+     * @return bool|string
+     */
     public static function isBot(&$botname = ''){
         $bots = array(
             'rambler','googlebot','aport','yahoo','msnbot','turtle','mail.ru','omsktele',

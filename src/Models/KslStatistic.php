@@ -4,23 +4,51 @@ namespace Klisl\Statistics\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+
+/**
+ * Class KslStatistic
+ * @package Klisl\Statistics\Models
+ *
+ * @property integer $id
+ */
 class KslStatistic extends Model{
 
+    /**
+     * Название таблицы
+     * @var string
+     */
     protected $table = 'kslStatistics';
 
+    /** @var array  */
     protected $guarded = [];
 
+    /** @var string первое число текущего месяца */
     public $start_time;
+
+    /** @var string сегодня */
     public $stop_time;
+
+    /** @var boolean */
     public $add_black_list;
+
+    /** @var boolean */
     public $del_black_list;
+
+    /** @var boolean */
     public $del_old;
+
+    /** @var boolean */
     public $reset;
 
 
 
-    //проверка наличия IP в черном списке (которые не надо выводить и сохранять в БД)
-    //если есть хоть одна строка, то вернет true
+    /**
+     * Проверка наличия IP в черном списке (которые не надо выводить и сохранять в БД)
+     * если есть хоть одна строка, то вернет true
+     *
+     * @param string $ip
+     * @return bool
+     */
     public function inspection_black_list($ip){
 
         $check = $this
@@ -31,6 +59,11 @@ class KslStatistic extends Model{
         if (!$check->isEmpty()) return true;
     }
 
+    /**
+     * @param string $ip
+     * @param string $str_url
+     * @param int $black_list_ip
+     */
     public function setCount($ip, $str_url, $black_list_ip = 0){
         $this->ip = $ip;
         $this->str_url = $str_url;
@@ -39,7 +72,11 @@ class KslStatistic extends Model{
     }
 
 
-
+    /**
+     * @param array|null $condition
+     * @param integer|null $days_ago
+     * @return \Illuminate\Support\Collection
+     */
     public function getCount($condition = null, $days_ago = null){
 
         $sec_todey = time() - strtotime('today'); //сколько секунд прошло с начала дня
@@ -76,11 +113,15 @@ class KslStatistic extends Model{
                 ->get();
 
         }
-//        dd($count_ip);
+
         return $count_ip;
     }
 
-    //выборка номеров IP которые в черном списке
+    /**
+     * Выборка номеров IP которые в черном списке
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public function count_black_list(){
 
             $black_list = $this
@@ -99,9 +140,13 @@ class KslStatistic extends Model{
     }
 
 
-
-
-    //Добавить в черн список
+    /**
+     * Добавление в черный список
+     *
+     * @param string $ip
+     * @param string $comment
+     * @return void
+     */
     public function set_black_list($ip, $comment=''){
         $verify_black_list = $this->where('ip', $ip)->get();
 
@@ -126,7 +171,12 @@ class KslStatistic extends Model{
 
 
 
-    //Удаление из черного списка
+    /**
+     * Удаление из черного списка
+     *
+     * @param string $ip
+     * @return void
+     */
     public function remove_black_list($ip){
         $res = null;
 
@@ -143,7 +193,11 @@ class KslStatistic extends Model{
 
 
 
-    //Удаление данных старше 90 дней
+    /**
+     * Удаление данных старше 90 дней
+     *
+     * @return void
+     */
     public function remove_old(){
 
         $today = time();
@@ -159,9 +213,12 @@ class KslStatistic extends Model{
 
     }
 
-    /*
+    /**
      * Проверка был ли такой IP в течении текущих суток (0-24)
      * Если да, то не добавляем в общий счетчик посетителей за день
+     * @param string $ip
+     * @param $date
+     * @return \Illuminate\Support\Collection
      */
     public function find_ip_by_day($ip, $date){
 
@@ -175,11 +232,14 @@ class KslStatistic extends Model{
     }
 
 
-    /*
-    * Преобразуем коллекцию к виду, где элементы с более поздней датой идут в начале
-    * при этом часы/минуты/секунды в расчет не берутся
-    * Используется для вывода в начале таблицы текущей даты и дальше по убыванию
-    */
+    /**
+     * Преобразуем коллекцию к виду, где элементы с более поздней датой идут в начале
+     * при этом часы/минуты/секунды в расчет не берутся
+     * Используется для вывода в начале таблицы текущей даты и дальше по убыванию
+     *
+     * @param $count_ip
+     * @return static
+     */
     public function reverse($count_ip){
 
         if(!$count_ip->isEmpty()){

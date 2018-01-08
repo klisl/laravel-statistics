@@ -3,15 +3,23 @@
 namespace Klisl\Statistics;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Schema;
 use Route;
 use Request;
 
 
+/**
+ * Class StatisticsServiceProvider
+ * @author Sergey <ksl80@ukr.net>
+ * @package Klisl\Statistics
+ */
 class StatisticsServiceProvider extends ServiceProvider
 {
 
-	
+    /**
+     * Инициализация расширения
+     *
+     * @return void
+     */
     public function boot()
     {
 
@@ -42,13 +50,10 @@ class StatisticsServiceProvider extends ServiceProvider
         include __DIR__.'/routes.php';
 
 
-		//Публикуем конфигурационный файл
         $this->publishes([__DIR__ . '/../config/' => config_path()]);
 
-		//Публикуем миграции
 		$this->publishes([__DIR__ . '/../database/' => database_path()]);
 
-		//Публикуем стили
 		$this->publishes([__DIR__ . '/../public/' => public_path()]);
 
 
@@ -57,14 +62,16 @@ class StatisticsServiceProvider extends ServiceProvider
          */
         $this->loadViewsFrom(__DIR__ . '/Views/stat', 'Views');
 
-
-//		Schema::defaultStringLength(191);
     }
 
-	
+    /**
+     * Регистрация сервис-провайдера стороннего пакета, указанного в зависимостях
+     *
+     * @return void
+     */
     public function register()
     {
-        // Регистрация сервис-провайдера стороннего пакета, указанного в зависимостях
+
         \App::register('Collective\Html\HtmlServiceProvider');
 
     }
