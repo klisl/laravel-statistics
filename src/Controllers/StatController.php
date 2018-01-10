@@ -19,11 +19,10 @@ class StatController extends Controller
 
     /**
      * @param array $condition
-     * @param integer|null $days_ago
      * @param bool $stat_ip
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function index($condition = [], $days_ago = null, $stat_ip = false)
+    public function index($condition = [], $stat_ip = false)
     {
 
         //Если доступ разрешен только аутентифицированным пользователям
@@ -51,7 +50,7 @@ class StatController extends Controller
         $count_model = new KslStatistic(); //модель
 
         //Получение списка статистики
-        $count_ip = $count_model->getCount($condition, $days_ago);
+        $count_ip = $count_model->getCount($condition);
 
         //Преобразуем коллекцию к виду где более поздняя дата идет в начале
         $count_ip = $count_model->reverse($count_ip);
@@ -108,7 +107,6 @@ class StatController extends Controller
          * Формы выбора параметров вывода статистики
          */
         $condition = [];
-		$days_ago = null;
         $stat_ip = false;
 
         $model = new KslStatistic();
@@ -193,7 +191,7 @@ class StatController extends Controller
             $model->remove_old();
         }
 
-        return $this->index($condition, $days_ago, $stat_ip);
+        return $this->index($condition, $stat_ip);
     }
 
     /**

@@ -74,10 +74,9 @@ class KslStatistic extends Model{
 
     /**
      * @param array|null $condition
-     * @param integer|null $days_ago
      * @return \Illuminate\Support\Collection
      */
-    public function getCount($condition = null, $days_ago = null){
+    public function getCount($condition = null){
 
         $sec_todey = time() - strtotime('today'); //сколько секунд прошло с начала дня
 

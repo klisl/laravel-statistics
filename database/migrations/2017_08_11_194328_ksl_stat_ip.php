@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class KslStatIp
+ * Миграция
  * Создание таблицы kslStatistics
  */
 class KslStatIp extends Migration
