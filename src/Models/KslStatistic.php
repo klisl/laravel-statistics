@@ -19,28 +19,6 @@ class KslStatistic extends Model{
      */
     protected $table = 'kslStatistics';
 
-    /** @var array  */
-    protected $guarded = [];
-
-    /** @var string первое число текущего месяца */
-    public $start_time;
-
-    /** @var string сегодня */
-    public $stop_time;
-
-    /** @var boolean */
-    public $add_black_list;
-
-    /** @var boolean */
-    public $del_black_list;
-
-    /** @var boolean */
-    public $del_old;
-
-    /** @var boolean */
-    public $reset;
-
-
 
     /**
      * Проверка наличия IP в черном списке (которые не надо выводить и сохранять в БД)
@@ -63,6 +41,7 @@ class KslStatistic extends Model{
      * @param string $ip
      * @param string $str_url
      * @param int $black_list_ip
+     * @return void
      */
     public function setCount($ip, $str_url, $black_list_ip = 0){
         $this->ip = $ip;
@@ -74,7 +53,7 @@ class KslStatistic extends Model{
 
     /**
      * @param array|null $condition
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getCount($condition = null){
 
@@ -110,7 +89,6 @@ class KslStatistic extends Model{
                 ->where('created_at', '>', $days_ago)
                 ->orderBy('created_at')
                 ->get();
-
         }
 
         return $count_ip;
@@ -119,7 +97,7 @@ class KslStatistic extends Model{
     /**
      * Выборка номеров IP которые в черном списке
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function count_black_list(){
 
@@ -216,8 +194,8 @@ class KslStatistic extends Model{
      * Проверка был ли такой IP в течении текущих суток (0-24)
      * Если да, то не добавляем в общий счетчик посетителей за день
      * @param string $ip
-     * @param $date
-     * @return \Illuminate\Support\Collection
+     * @param \Illuminate\Support\Carbon $date
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function find_ip_by_day($ip, $date){
 
@@ -227,6 +205,7 @@ class KslStatistic extends Model{
         $res = $this->where('ip', $ip)
             ->whereBetween('created_at', [$time, $time_now])
             ->get();
+
         return $res;
     }
 
@@ -236,8 +215,8 @@ class KslStatistic extends Model{
      * при этом часы/минуты/секунды в расчет не берутся
      * Используется для вывода в начале таблицы текущей даты и дальше по убыванию
      *
-     * @param $count_ip
-     * @return static
+     * @param \Illuminate\Database\Eloquent\Collection $count_ip
+     * @return \Illuminate\Support\Collection|\Illuminate\Database\Eloquent\Collection
      */
     public function reverse($count_ip){
 
@@ -257,6 +236,7 @@ class KslStatistic extends Model{
                     $array[$count][] = $item;
                 }
             };
+
             return collect($array)->reverse()->collapse();
         }
         return $count_ip;

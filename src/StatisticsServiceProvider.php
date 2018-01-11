@@ -8,7 +8,6 @@ use Request;
 
 
 /**
- * Class StatisticsServiceProvider
  * @author Sergey <ksl80@ukr.net>
  * @package Klisl\Statistics
  */
@@ -40,7 +39,6 @@ class StatisticsServiceProvider extends ServiceProvider
             }
         });
 
-
         //Регистрация алиасов для стороннего пакета laravelcollective/html
         $loader = \Illuminate\Foundation\AliasLoader::getInstance();
         $loader->alias('Html', 'Collective\Html\HtmlFacade');
@@ -49,13 +47,9 @@ class StatisticsServiceProvider extends ServiceProvider
         //подключение файла маршрутов пакета
         include __DIR__.'/routes.php';
 
-
         $this->publishes([__DIR__ . '/../config/' => config_path()]);
-
 		$this->publishes([__DIR__ . '/../database/' => database_path()]);
-
 		$this->publishes([__DIR__ . '/../public/' => public_path()]);
-
 
         /*
          * Регистрируется (добавляем) каталог для хранения шаблонов
@@ -64,6 +58,7 @@ class StatisticsServiceProvider extends ServiceProvider
 
     }
 
+
     /**
      * Регистрация сервис-провайдера стороннего пакета, указанного в зависимостях
      *
@@ -71,9 +66,7 @@ class StatisticsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
         \App::register('Collective\Html\HtmlServiceProvider');
-
     }
 
 }

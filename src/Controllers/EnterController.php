@@ -7,16 +7,16 @@ use Illuminate\Http\Request;
 
 
 /**
- * Class EnterController
- * Обрабатывает форму входа на страницу статистики
+ * Страница входа
  *
  * @package Klisl\Statistics\Controllers
  */
 class EnterController extends Controller
 {
+
     /**
      * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function index(Request $request){
 
@@ -25,12 +25,14 @@ class EnterController extends Controller
 
         if($password_config == $password_enter){
 
-            session(['ksl-statistics' => true]);
-
+            session(['ksl-statistics' => $password_config]);
             return redirect()->route('statistics');
 
         } else {
-            session()->flash('error', 'Неверный пароль');
+            if($password_enter){
+                session()->flash('error', 'Неверный пароль');
+            }
+
             return view('Views::enter');
         }
 

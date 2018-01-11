@@ -6,8 +6,8 @@ use Klisl\Statistics\Models\KslStatistic;
 
 
 /**
- * Class Count
  * Сохраняет в БД IP посетителя
+ *
  * @package Klisl\Statistics
  */
 class Count

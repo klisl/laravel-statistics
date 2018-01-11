@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 
 /**
- * Class StatController
  * Формирует страницу статистики
  *
  * @package Klisl\Statistics\Controllers
@@ -18,6 +17,8 @@ class StatController extends Controller
 {
 
     /**
+     * Отвечает за вывод страницы статистики
+     *
      * @param array $condition
      * @param bool $stat_ip
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
@@ -25,27 +26,12 @@ class StatController extends Controller
     public function index($condition = [], $stat_ip = false)
     {
 
-        //Если доступ разрешен только аутентифицированным пользователям
-        $auth_config = config('statistics.authentication');
-        $user = \Auth::user();
+        $this->checkAccess(); //проверка доступа к странице
 
-        if ($auth_config && !$user) {
-            $auth_route = config('statistics.auth_route');
-            return redirect()->route($auth_route);
+        $checkPassword = $this->checkPassword(); //проверка ввода пароля
+        if(!$checkPassword){
+            return redirect()->route('enter');
         }
-
-
-        //Проверка доступа по вводу пароля
-        $password_config = config('statistics.password');
-
-        if ($password_config) {
-            $session_stat = session('ksl-statistics');
-
-            if (!$session_stat || ($session_stat !== $password_config)) {
-                return view('Views::enter');
-            }
-        }
-
 
         $count_model = new KslStatistic(); //модель
 
@@ -56,10 +42,7 @@ class StatController extends Controller
         $count_ip = $count_model->reverse($count_ip);
 
 
-
-		/*
-		 * Устанавливаем значение полей по-умолчанию для вывода в полях формы
-		 */
+		//Значение полей по-умолчанию для вывода в полях формы
 		$count_model->date_ip = time(); //сегодня
 		$count_model->start_time = date('Y-m-01'); //первое число текущего месяца
 		$count_model->stop_time = time(); //сегодня
@@ -76,32 +59,53 @@ class StatController extends Controller
 
 
     /**
+     * Проверка доступа пользователя к просмотру страницы статистики
+     * перенаправление на страницу входа если не авторизован
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function checkAccess(){
+
+        $auth_config = config('statistics.authentication');
+        $user = \Auth::user();
+
+        if ($auth_config && !$user) {
+            $auth_route = config('statistics.auth_route');
+            redirect()->route($auth_route)->send();
+        }
+    }
+
+
+    /**
+     * Проверка пароля сохраненного в сессии для доступа к странице статистики
+     *
+     * @return bool
+     */
+    public function checkPassword(){
+
+        $password_config = config('statistics.password');
+
+        if ($password_config) {
+            $session_stat = session('ksl-statistics');
+
+            if ($session_stat !== $password_config) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
+    /**
+     * Обработка форм - форма входа и формы со страницы статистики
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function forms(Request $request){
 
         $count_model = $request->except('_token');
-
-        /*
-         * Форма входа на страницу статистики
-         */
-        if(isset($count_model['enter'])) {
-            $password_config = config('statistics.password');
-            $password_enter = $request->input('password');
-
-            if ($password_config == $password_enter) {
-
-                session(['ksl-statistics' => $password_config]);
-
-                return redirect()->route('statistics');
-
-            } else {
-                session()->flash('error', 'Неверный пароль');
-                return view('Views::enter');
-            }
-        }
-
 
         /*
          * Формы выбора параметров вывода статистики
@@ -143,7 +147,6 @@ class StatController extends Controller
             $timeStopUnix += 86400; //целый день (до конца суток)
             $condition = ["created_at", $timeStartUnix , $timeStopUnix];
         }
-
 
 
         //По IP
@@ -194,24 +197,5 @@ class StatController extends Controller
         return $this->index($condition, $stat_ip);
     }
 
-    /**
-     * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     */
-    public function enter(Request $request){
-        $password_config = config('statistics.password');
-        $password_enter = $request->input('password');
 
-        if($password_config == $password_enter){
-
-            session(['ksl-statistics' => $password_config]);
-
-            return redirect()->route('statistics');
-
-        } else {
-            session()->flash('error', 'Неверный пароль');
-            return view('Views::enter');
-        }
-
-    }
 }
