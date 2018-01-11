@@ -21,7 +21,7 @@
         <div class="hentry group">
 
             <h3>Статистика посещений</h3>
-            {!! Form::open(['url'=>route('forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
+            {!! Form::open(['url'=>route('enter_forms'), 'class'=>'form-horizontal','method' => 'POST']) !!}
 
             <div class="form-group">
                 {{ Form::label('Ввод пароля', null, ['class' => 'control-label']) }}
