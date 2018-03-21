@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
  */
 class EnterController extends Controller
 {
-
     /**
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View

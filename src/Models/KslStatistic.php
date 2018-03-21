@@ -3,13 +3,14 @@
 namespace Klisl\Statistics\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 
 /**
  * Class KslStatistic
  * @package Klisl\Statistics\Models
- *
- * @property integer $id
+ * @mixin \Illuminate\Database\Query\Builder
  */
 class KslStatistic extends Model{
 
@@ -28,13 +29,14 @@ class KslStatistic extends Model{
      * @return bool
      */
     public function inspection_black_list($ip){
-
         $check = $this
             ->where('ip', $ip)
             ->where('black_list_ip', 1)
             ->get();
 
         if (!$check->isEmpty()) return true;
+
+        return false;
     }
 
     /**
@@ -53,7 +55,7 @@ class KslStatistic extends Model{
 
     /**
      * @param array|null $condition
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public function getCount($condition = null){
 
@@ -97,7 +99,7 @@ class KslStatistic extends Model{
     /**
      * Выборка номеров IP которые в черном списке
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public function count_black_list(){
 
@@ -125,6 +127,7 @@ class KslStatistic extends Model{
      * @return void
      */
     public function set_black_list($ip, $comment=''){
+        $res = false;
         $verify_black_list = $this->where('ip', $ip)->get();
 
         //Если такой IP уже есть (коллекция не пуста)
@@ -194,11 +197,10 @@ class KslStatistic extends Model{
      * Проверка был ли такой IP в течении текущих суток (0-24)
      * Если да, то не добавляем в общий счетчик посетителей за день
      * @param string $ip
-     * @param \Illuminate\Support\Carbon $date
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @param Carbon $date
+     * @return Collection
      */
     public function find_ip_by_day($ip, $date){
-
         $time = $date->format('Y-m-d 00:00:00'); //0:00 полученного дня
         $time_now = $date->subSecond()->format('Y-m-d H:i:s'); //текущее время и день минус 1 секунда
 
@@ -215,8 +217,8 @@ class KslStatistic extends Model{
      * при этом часы/минуты/секунды в расчет не берутся
      * Используется для вывода в начале таблицы текущей даты и дальше по убыванию
      *
-     * @param \Illuminate\Database\Eloquent\Collection $count_ip
-     * @return \Illuminate\Support\Collection|\Illuminate\Database\Eloquent\Collection
+     * @param Collection $count_ip
+     * @return Collection
      */
     public function reverse($count_ip){
 

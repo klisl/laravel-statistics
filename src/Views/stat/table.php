@@ -107,7 +107,10 @@
            echo ">";
         }
         echo "<td>$transition</td>
-            <td><a href='http://speed-tester.info/ip_location.php?ip=".$value->ip."' target=\"_blank\">".$value->ip."</a></td>  	
+	
+            <td><a id='api' href='".$value->ip."'>".$value->ip."</a></td> 
+            
+            
             <td><a href='".$value->str_url."' target=\"_blank\">".$value->str_url."</a></td>                     
             <td>".$value->created_at->format('d.m.Y H:i:s')."</td></tr>";
 
