@@ -8,9 +8,11 @@
 
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{{asset('ksl-stat/js/jquery.toastmessage.js')}}"></script>
+    <script src="{{asset('ksl-stat/js/api-ip.js')}}"></script>
 
     <link href="{{asset('ksl-stat/css/style_ip.css')}}" rel="stylesheet">
-
+    <link href="{{asset('ksl-stat/css/jquery.toastmessage.css')}}" rel="stylesheet">
 </head>
 <body>
     <h3 class="stat_center">Статистика посещений по IP</h3>

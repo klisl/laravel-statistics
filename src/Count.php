@@ -22,6 +22,7 @@ class Count
     public static function init(){
 
         $ip = \Request::ip();
+        // if($ip == '127.0.0.1') return;
 
         $count_model = new KslStatistic();
 
@@ -29,7 +30,7 @@ class Count
 
 
 		//Проверка на бота
-		$bot_name = self::isBot();
+		$bot_name = self::isBot2();
 
 		if(!$bot_name){
 			//Проверка в черном списке
@@ -41,14 +42,13 @@ class Count
 		}
 	}
 
-
     /**
      * Проверяет, является ли посетитель роботом поисковой системы.
      *
      * @param string $botname
      * @return bool|string
      */
-    public static function isBot(&$botname = ''){
+    protected static function isBot1(&$botname = ''){
         $bots = array(
             'rambler','googlebot','aport','yahoo','msnbot','turtle','mail.ru','omsktele',
             'yetibot','picsearch','sape.bot','sape_context','gigabot','snapbot','alexa.com',
@@ -66,6 +66,16 @@ class Count
                 return $botname;
             }
         return false;
+    }
+
+    //Альтернативный метод проверки на бота
+    protected static function isBot2()
+    {
+        $is_bot = preg_match(
+            "~(Google|Yahoo|Rambler|Bot|Yandex|Spider|Snoopy|Crawler|Finder|Mail|curl)~i",
+            $_SERVER['HTTP_USER_AGENT']
+        );
+        return $is_bot;
     }
 
 }
