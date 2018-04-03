@@ -194,7 +194,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="copyright">
-                            <p class="text-center"><a href="http://klisl.com/" target="_blank"><b>&copy; KSL</b></a></p>
+                            <p class="text-center"><a href="https://klisl.com/" target="_blank"><b>&copy; KSL</b></a></p>
                         </div>
                     </div>
                 </div>
